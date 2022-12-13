@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import megatera.makaoGymbackEnd.models.Option;
 import megatera.makaoGymbackEnd.models.Product;
-import megatera.makaoGymbackEnd.models.UserName;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/backdoor")
+@RequestMapping("backdoor")
 @Transactional
 public class BackdoorController {
     private final JdbcTemplate jdbcTemplate;
@@ -22,36 +21,72 @@ public class BackdoorController {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    @GetMapping("/setup-database")
+    @GetMapping("setup-database")
     public String setupDatabase() {
         LocalDateTime now = LocalDateTime.now();
 
+        jdbcTemplate.execute("DELETE FROM work");
+        jdbcTemplate.execute("DELETE FROM request");
+        jdbcTemplate.execute("DELETE FROM person");
+        jdbcTemplate.execute("DELETE FROM trainer");
+        jdbcTemplate.execute("DELETE FROM option");
         jdbcTemplate.execute("DELETE FROM product");
         jdbcTemplate.execute("DELETE FROM license");
         jdbcTemplate.execute("DELETE FROM lecture");
 
-        Option ptOption = new Option(12);
-        Option empty = new Option((Integer) null);
-        Option useOfDateOption = new Option(90);
-        String mondayOption = "월 수 금";
-        String tuesdayOption = "화 목";
-        String timeOption = "11:00";
+        jdbcTemplate.update("INSERT INTO " +
+                        "person(" +
+                        "id, user_name, name, pt_times, period_of_use, " +
+                        "created_at, updated_at" +
+                        ")" +
+                        "VALUES(1, '오진성', '오진성', 0, 0, ?, ?)",
+                now, now
+        );
 
-        List<Product> products = new ArrayList<>();
-        products.add(new Product("헬스장 이용권", new UserName("오진성"), useOfDateOption, empty, null, null, 180000));
-        products.add(new Product("피티", new UserName("오진욱"), empty, ptOption, timeOption, mondayOption, 360000));
+        Long trainerId = 1L;
 
-        for (int i = 0; i < 2; i += 1) {
-            Long id = (long) i + 1;
+        jdbcTemplate.update("INSERT INTO " +
+                        "trainer(" +
+                        "id, user_name, name, start_time, end_time, " +
+                        "created_at, updated_at" +
+                        ")" +
+                        "VALUES(?, '오진성', '오진성', '09:00', '18:00', ?, ?)",
+                trainerId, now, now
+        );
+
+        Long productId = 1L;
+
+        List<Option> ptOptions = new ArrayList<>();
+        Option option1 = new Option(productId, 12, 60, 360000);
+        Option option2 = new Option(productId, 30, 180, 720000);
+        ptOptions.add(option1);
+        ptOptions.add(option2);
+
+
+        Product product = new Product("피티", trainerId);
+
+        jdbcTemplate.update("INSERT INTO " +
+                        "product(" +
+                        "id, title, trainer_id, " +
+                        "created_at, updated_at" +
+                        ") " +
+                        "VALUES(?, ?, ?, ?, ?)",
+                productId, product.title(), product.trainerId(),
+                now, now
+        );
+
+        for (int i = 0; i < ptOptions.size(); i += 1) {
+            Long id = (long) (i + 1);
+
             jdbcTemplate.update("INSERT INTO " +
-                            "product(" +
-                            "id, title, user_name, date_option, pt_option, price, time_of_pt, day_of_week, " +
-                            "created_at, updated_at" +
-                            ") " +
-                            "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                    id, products.get(i).title(), products.get(i).trainer().value(), products.get(i).dateOfUse().value(),
-                    products.get(i).ptTimes().value(), products.get(i).price(), products.get(i).timeOfPt(), products.get(i).dayOfWeek(),
-                    now, now
+                            "option(" +
+                            "id, product_id, date_of_use, price, pt_times) " +
+                            "VALUES(?, ?, ?, ?, ?)",
+                    id,
+                    ptOptions.get(i).productId(),
+                    ptOptions.get(i).dateOfUse(),
+                    ptOptions.get(i).price(),
+                    ptOptions.get(i).ptTimes()
             );
         }
 
@@ -72,3 +107,6 @@ public class BackdoorController {
         return "OK";
     }
 }
+
+//서버에 요청 뭘로? 유저아디로 보낸다 트레이너가 수락 강의 채결 !! 토큰 준다. 토큰 서버에서 겟 바이 알람 요청
+//

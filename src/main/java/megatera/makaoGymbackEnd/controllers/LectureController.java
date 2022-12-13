@@ -1,44 +1,56 @@
 package megatera.makaoGymbackEnd.controllers;
 
-import java.util.List;
-import megatera.makaoGymbackEnd.dtos.LectureDto;
-import megatera.makaoGymbackEnd.dtos.LectureRegisterDto;
+import megatera.makaoGymbackEnd.dtos.*;
+import megatera.makaoGymbackEnd.exceptions.RequestFailed;
 import megatera.makaoGymbackEnd.services.LectureService;
+import megatera.makaoGymbackEnd.services.TrainerService;
+import megatera.makaoGymbackEnd.services.UserService;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/lectures")
 public class LectureController {
     private final LectureService lectureService;
+    private final TrainerService trainerService;
+    private final UserService userService;
 
-    public LectureController(LectureService lectureService) {
+    public LectureController(LectureService lectureService,
+                             TrainerService trainerService,
+                             UserService userService) {
         this.lectureService = lectureService;
+        this.trainerService = trainerService;
+        this.userService = userService;
     }
-    @GetMapping
-    public List<LectureDto> list() {
-        return lectureService.list();
+
+    @GetMapping("{id}")
+    public List<LectureDto> list(
+            @PathVariable("id") Long trainerId
+    ) {
+        return lectureService.list(trainerId);
+
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public List<LectureDto> register(
+    public LectureDto register(
             @RequestBody LectureRegisterDto lectureRegisterDto
-            ) {
-        List<LectureDto> lectureDtos = lectureService.makeList(
-                lectureRegisterDto.getOrderId(),
-                lectureRegisterDto.getTrainer(),
-                lectureRegisterDto.getConsumer(),
-                lectureRegisterDto.getPtTimes(),
-                lectureRegisterDto.getTimeOfPt(),
-                lectureRegisterDto.getDayOfWeek(),
-                lectureRegisterDto.getPtStartDate());
+    ) {
+        UserDto userDto = userService.find();
 
-        return lectureDtos;
+        return lectureService.create(
+                lectureRegisterDto.getTrainerId(),
+                lectureRegisterDto.getConsumerId(),
+                lectureRegisterDto.getDate(),
+                userDto.getName()
+        );
+    }
+
+    @ExceptionHandler(RequestFailed.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDto requestFailed(RequestFailed requestFailed) {
+        return new RequestErrorDto(requestFailed.getCode(), requestFailed.getMessage());
     }
 }

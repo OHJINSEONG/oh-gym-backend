@@ -14,7 +14,5 @@ class ProductTest {
         ProductDto productDto = product.toDto();
 
         assertThat(productDto.getTitle()).isEqualTo("피티");
-        assertThat(productDto.getTrainer()).isEqualTo("오진욱");
-        assertThat(productDto.getDateOfUse()).isEqualTo(90);
     }
 }

@@ -1,13 +1,11 @@
 package megatera.makaoGymbackEnd.models;
 
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Calendar;
-import javax.persistence.AttributeOverride;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import java.time.LocalTime;
+import javax.persistence.*;
+
 import megatera.makaoGymbackEnd.dtos.LectureDto;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -18,19 +16,17 @@ public class Lecture {
     @GeneratedValue
     private Long id;
 
-    private Long orderId;
+    private Long userId;
 
-    @Embedded
-    @AttributeOverride(name = "value", column = @Column(name = "trainer"))
-    private UserName trainer;
+    private Long trainerId;
 
-    @Embedded
-    @AttributeOverride(name = "value", column = @Column(name = "consumer"))
-    private UserName consumer;
-
-    private String timeOfPt;
+    private Status status;
 
     private String date;
+
+    private String time;
+
+    private String consumerName;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -41,50 +37,25 @@ public class Lecture {
     public Lecture() {
     }
 
-    public Lecture(Long orderId, UserName trainer, UserName consumer, String timeOfPt) {
-        this.orderId = orderId;
-        this.trainer = trainer;
-        this.consumer = consumer;
-        this.timeOfPt = timeOfPt;
+    public Lecture(Long trainerId, Long userId, String date, String time, String consumerName) {
+        this.trainerId = trainerId;
+        this.userId = userId;
+        this.date = date;
+        this.time = time;
+        this.consumerName = consumerName;
     }
 
-    public static Lecture fake(Long orderId) {
-        UserName trainer = new UserName("오진욱");
-        UserName consumer = new UserName("오진성");
-        String timeOfPt = "11:00";
+    public static Lecture fake(String date) {
+        Long trainerId = 1L;
+        Long consumerId = 1L;
+        String time = "11:00";
+        String consumerName = "오진욱";
 
-        return new Lecture(orderId, trainer, consumer, timeOfPt);
-    }
-
-    public void setDate(Calendar calendar, int dayOfWeek, String ptStartDate) {
-        String[] startDates = ptStartDate.split("/");
-
-        int ptFirstYear = Integer.parseInt(startDates[0]);
-
-        int ptFirstMonth = Integer.parseInt(startDates[1]);
-
-        int fDay = Integer.parseInt(startDates[2]);
-
-        int week = 7;
-
-        calendar.set(Calendar.YEAR, ptFirstYear);
-        calendar.set(Calendar.MONTH, ptFirstMonth - 1);
-        calendar.set(Calendar.DATE, fDay);
-
-        if (calendar.get(Calendar.DAY_OF_WEEK) < dayOfWeek) {
-            calendar.set(Calendar.DATE, (dayOfWeek - calendar.get(Calendar.DAY_OF_WEEK)) + fDay);
-        }
-        if (calendar.get(Calendar.DAY_OF_WEEK) > dayOfWeek) {
-            calendar.set(Calendar.DATE, ((week + dayOfWeek) - calendar.get(Calendar.DAY_OF_WEEK)) + fDay);
-        }
-
-        this.date = calendar.get(Calendar.YEAR) +
-                "/" + (calendar.get(Calendar.MONTH) + 1) +
-                "/" + calendar.get(Calendar.DATE);
+        return new Lecture(trainerId, consumerId, date, time, consumerName);
     }
 
     public LectureDto toDto() {
-        return new LectureDto(id, trainer.value(), consumer.value(), date, timeOfPt);
+        return new LectureDto(id, consumerName, status, date, time);
     }
 
     public String date() {
@@ -97,4 +68,10 @@ public class Lecture {
                 other.getClass().equals(Lecture.class) &&
                 this.id.equals(((Lecture) other).id);
     }
+
+    public void setStatusCreated() {
+        this.status = "CREATED";
+    }
 }
+
+// Work 피티 2시 6시  ㄴㅇㄴ

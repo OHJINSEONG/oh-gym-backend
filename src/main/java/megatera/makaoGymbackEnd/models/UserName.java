@@ -31,4 +31,9 @@ public class UserName {
                 other.getClass() == UserName.class &&
                 Objects.equals(this.value, ((UserName) other).value);
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
+    }
 }

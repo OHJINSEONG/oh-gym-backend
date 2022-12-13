@@ -1,55 +1,29 @@
 package megatera.makaoGymbackEnd.dtos;
 
 public class LectureRegisterDto {
-    private Long orderId;
-    private String trainer;
-    private String consumer;
-    private Integer ptTimes;
-    private String timeOfPt;
-    private String dayOfWeek;
-    private String ptStartDate;
+    private Long trainerId;
+    private Long consumerId;
+    private String date;
 
-    public LectureRegisterDto(Long orderId,
-                              String trainer,
-                              String consumer,
-                              Integer ptTimes,
-                              String timeOfPt,
-                              String dayOfWeek,
-                              String ptStartDate) {
-        this.orderId = orderId;
-        this.trainer = trainer;
-        this.consumer = consumer;
-        this.ptTimes = ptTimes;
-        this.timeOfPt = timeOfPt;
-        this.dayOfWeek = dayOfWeek;
-        this.ptStartDate = ptStartDate;
+    public LectureRegisterDto(
+            Long trainerId,
+            Long consumerId,
+            String date
+    ) {
+        this.trainerId = trainerId;
+        this.consumerId = consumerId;
+        this.date = date;
     }
 
-    public Long getOrderId() {
-        return orderId;
+    public Long getTrainerId() {
+        return trainerId;
     }
 
-    public String getTrainer() {
-        return trainer;
+    public Long getConsumerId() {
+        return consumerId;
     }
 
-    public String getConsumer() {
-        return consumer;
-    }
-
-    public Integer getPtTimes() {
-        return ptTimes;
-    }
-
-    public String getTimeOfPt() {
-        return timeOfPt;
-    }
-
-    public String getDayOfWeek() {
-        return dayOfWeek;
-    }
-
-    public String getPtStartDate() {
-        return ptStartDate;
+    public String getDate() {
+        return date;
     }
 }

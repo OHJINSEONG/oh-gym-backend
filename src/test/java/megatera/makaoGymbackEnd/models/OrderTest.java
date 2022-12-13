@@ -16,6 +16,6 @@ class OrderTest {
         OrderResultDto orderResultDto = order.toDto();
 
         assertThat(orderResultDto.getProductId()).isEqualTo(1L);
-        assertThat(orderResultDto.getPtStartDate()).isEqualTo("2022/12/06");
+        assertThat(orderResultDto.getPtStartDate()).isEqualTo("2022-12-06");
     }
 }
