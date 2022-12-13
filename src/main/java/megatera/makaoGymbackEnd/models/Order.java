@@ -35,7 +35,7 @@ public class Order {
     }
 
     public static Order fake(Long productId) {
-        String ptStartDate = "2022/12/06";
+        String ptStartDate = "2022-12-06";
 
         return new Order(ptStartDate, productId);
     }

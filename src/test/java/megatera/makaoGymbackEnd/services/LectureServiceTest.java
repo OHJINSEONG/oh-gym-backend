@@ -2,12 +2,15 @@ package megatera.makaoGymbackEnd.services;
 
 import java.util.List;
 import megatera.makaoGymbackEnd.dtos.LectureDto;
+import megatera.makaoGymbackEnd.dtos.LectureScheduleDto;
+import megatera.makaoGymbackEnd.models.Lecture;
 import megatera.makaoGymbackEnd.repositories.LectureRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 class LectureServiceTest {
@@ -22,24 +25,44 @@ class LectureServiceTest {
     }
 
     @Test
-    void makeList() {
-        Long orderId = 1L;
-        String trainer = "오진욱";
-        String consumer = "오진성";
-        Integer ptTimes = 12;
-        String timeOfPt = "11:00";
-        String dayOfWeeks = "월 수 금";
-        String ptStartDate = "2022/12/06";
+    void list() {
+        Long trainerId = 1L;
 
-        List<LectureDto> lectureDtos = lectureService.makeList(orderId,
-                trainer,
-                consumer,
-                ptTimes,
-                timeOfPt,
-                dayOfWeeks,
-                ptStartDate
-        );
+        given(lectureRepository.findAllByTrainerId(trainerId)).willReturn(List.of(
+                Lecture.fake("2022-12-09T11:00"),
+                Lecture.fake("2022-12-10T13:00"),
+                Lecture.fake("2022-12-1T15:00")
+        ));
 
-        assertThat(lectureDtos).hasSize(12);
+        List<LectureDto> lectureDtos = lectureService.list(trainerId);
+    }
+
+    @Test
+    void makeDailySchedule() {
+        Long trainerId = 1L;
+
+        given(lectureRepository.findAllByTrainerId(trainerId)).willReturn(List.of(
+                Lecture.fake("2022-12-09T11:00"),
+                Lecture.fake("2022-12-10T13:00"),
+                Lecture.fake("2022-12-1T15:00")
+        ));
+
+        LectureScheduleDto lectureScheduleDto = lectureService.makeDaliySchedule(trainerId, "09:00", "18:00");
+
+        assertThat(lectureScheduleDto.getTrainerLectureDtos()).hasSize(3);
+        assertThat(lectureScheduleDto.getStartTime()).isEqualTo("09:00");
+        assertThat(lectureScheduleDto.getEndTime()).isEqualTo("18:00");
+    }
+
+    @Test
+    void create() {
+        Long trainerId = 1L;
+        Long cunsumerId = 1L;
+        String date = "2022-12-09T11:00";
+        String consumerName = "오진욱";
+
+        LectureDto lectureDto = lectureService.create(trainerId, cunsumerId,date,consumerName);
+
+        assertThat(lectureDto.getDate()).isEqualTo(date);
     }
 }

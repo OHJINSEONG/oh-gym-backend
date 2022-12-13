@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -37,4 +38,15 @@ class ProductsControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/products/1"))
                 .andExpect(status().isOk());
     }
+
+//    @Test
+//    void create() throws Exception {
+//        mockMvc.perform(MockMvcRequestBuilders.get("/products")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content("{" +
+//                                "\"title\" : \"피티\" ," +
+//                                "\"trainer\" : \"오진성\"" +
+//                                "}"))
+//                .andExpect(status().isCreated());
+//    }
 }
