@@ -2,15 +2,15 @@ package megatera.makaoGymbackEnd.dtos;
 
 public class LectureDto {
     private Long id;
-    private String trainer;
-    private String cunsumer;
+    private String userName;
+    private String status;
     private String date;
     private String time;
 
-    public LectureDto(Long id, String trainer, String cunsumer, String date, String time) {
+    public LectureDto(Long id, String userName, String status, String date, String time) {
         this.id = id;
-        this.trainer = trainer;
-        this.cunsumer = cunsumer;
+        this.userName = userName;
+        this.status = status;
         this.date = date;
         this.time = time;
     }
@@ -19,12 +19,12 @@ public class LectureDto {
         return id;
     }
 
-    public String getTrainer() {
-        return trainer;
+    public String getUserName() {
+        return userName;
     }
 
-    public String getCunsumer() {
-        return cunsumer;
+    public String getStatus() {
+        return status;
     }
 
     public String getDate() {

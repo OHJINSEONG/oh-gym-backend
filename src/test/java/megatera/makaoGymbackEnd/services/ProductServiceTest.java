@@ -41,7 +41,7 @@ class ProductServiceTest {
     void find() {
         given(productRepository.getReferenceById(any())).willReturn(Product.fake("피티"));
 
-        ProductDto productDto = productService.find(1L);
+        ProductDto productDto = productService.find(1L, optionDtos);
 
         assertThat(productDto.getTitle()).isEqualTo("피티");
     }

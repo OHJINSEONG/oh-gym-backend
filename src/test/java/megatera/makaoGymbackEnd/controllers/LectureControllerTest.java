@@ -1,7 +1,11 @@
 package megatera.makaoGymbackEnd.controllers;
 
+import megatera.makaoGymbackEnd.dtos.UserDto;
+import megatera.makaoGymbackEnd.models.User;
+import megatera.makaoGymbackEnd.models.UserName;
 import megatera.makaoGymbackEnd.services.LectureService;
-import org.junit.jupiter.api.BeforeEach;
+import megatera.makaoGymbackEnd.services.TrainerService;
+import megatera.makaoGymbackEnd.services.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -11,7 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 
-import static org.mockito.Mockito.mock;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(LectureController.class)
@@ -22,29 +26,30 @@ class LectureControllerTest {
     @MockBean
     private LectureService lectureService;
 
-    @BeforeEach
-    void setup() {
-        lectureService = mock(LectureService.class);
-    }
+    @MockBean
+    private TrainerService trainerService;
+
+    @MockBean
+    private UserService userService;
 
     @Test
     void list() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/lectures"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/lectures/1"))
                 .andExpect(status().isOk());
     }
 
     @Test
     void register() throws Exception {
+        UserDto userDto = User.fake(new UserName("오진성")).toDto();
+
+        given(userService.find()).willReturn(userDto);
+
         mockMvc.perform(MockMvcRequestBuilders.post("/lectures")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{" +
-                                "\"orderId\": \"1\" , " +
-                                "\"trainer\" :\"오진욱\" , " +
-                                "\"consumer\": \"오진성\" , " +
-                                "\"ptTimes\" : \"12\" , " +
-                                "\"timeOfPt\" : \"11:00\", " +
-                                "\"dayOfWeek\" : \"월 수 금\" , " +
-                                "\"ptStartDate\" :\"2022/12/06\"" +
+                                "\"trainerId\": \"1\" , " +
+                                "\"consumerId\" :\"1\" , " +
+                                "\"date\": \"2022-12-06T11:00\"" +
                                 "}"))
                 .andExpect(status().isCreated());
     }
