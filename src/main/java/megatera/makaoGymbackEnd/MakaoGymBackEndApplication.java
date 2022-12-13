@@ -25,8 +25,10 @@ public class MakaoGymBackEndApplication {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("*");
+                registry.addMapping("/**").allowedOrigins("*").allowedMethods("*");
             }
         };
     }
 }
+
+//를 사용하여 모든 유알엘에 CORS를 적용하지만 명시적으로 도 적어줄수있다.
