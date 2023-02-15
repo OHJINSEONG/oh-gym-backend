@@ -51,4 +51,14 @@ public class UserService {
 
         return user.toDto();
     }
+
+    public UserDto testUserCreate() {
+        User user = new User(new UserName("테스트용"), "테스트용 이메일", new Count(0L), new Period(0L));
+
+        user.created();
+
+        userRepository.save(user);
+
+        return user.toDto();
+    }
 }
