@@ -1,6 +1,7 @@
 package megatera.makaoGymbackEnd.repositories;
 
 import java.util.List;
+
 import megatera.makaoGymbackEnd.models.Option;
 import org.springframework.data.jpa.repository.JpaRepository;
 

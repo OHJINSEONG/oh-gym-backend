@@ -1,7 +1,0 @@
-package megatera.makaoGymbackEnd.repositories;
-
-import megatera.makaoGymbackEnd.models.Schedule;
-import org.springframework.data.jpa.repository.JpaRepository;
-
-public interface ScheduleRepository extends JpaRepository<Schedule,Long> {
-}

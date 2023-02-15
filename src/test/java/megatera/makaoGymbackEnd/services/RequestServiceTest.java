@@ -27,11 +27,11 @@ class RequestServiceTest {
     void create() {
         Long senderId = 1L;
         Long receiverId = 1L;
-        String type = "requestPt";
+        Long lectureId = 1L;
         String context = "2022-12-09T11:00";
         String senderName = "오진욱";
 
-        RequestResultDto requestResultDto = requestService.create(senderId, receiverId, type, context, senderName);
+        RequestResultDto requestResultDto = requestService.create(senderId, receiverId, lectureId, context, senderName);
 
         assertThat(requestResultDto.getContext()).isEqualTo(context);
         assertThat(requestResultDto.getStatus()).isEqualTo("CREATED");
@@ -48,6 +48,7 @@ class RequestServiceTest {
                 Request.fake("2022-12-09T14:00"),
                 Request.fake("2022-12-09T15:00")
         ));
+
         List<RequestResultDto> requestResultDtos = requestService.findByReceiverId(receiverId);
 
         assertThat(requestResultDtos).hasSize(5);
@@ -68,21 +69,10 @@ class RequestServiceTest {
         List<Request> requests = requestService.makeChecked(trainerId);
 
         assertThat(requests).hasSize(5);
-        assertThat(requests.get(0).status()).isEqualTo("CHECKED");
-        assertThat(requests.get(1).status()).isEqualTo("CHECKED");
-        assertThat(requests.get(2).status()).isEqualTo("CHECKED");
-        assertThat(requests.get(3).status()).isEqualTo("CHECKED");
-        assertThat(requests.get(4).status()).isEqualTo("CHECKED");
-    }
-
-    @Test
-    void delete() {
-        Long id= 1L;
-
-        given(requestRepository.getReferenceById(id)).willReturn(Request.fake("2022-12-09T11:00"));
-
-        Request request = requestService.delete(id);
-
-        assertThat(request.status()).isEqualTo("DELETED");
+        assertThat(requests.get(0).status().value()).isEqualTo("CHECKED");
+        assertThat(requests.get(1).status().value()).isEqualTo("CHECKED");
+        assertThat(requests.get(2).status().value()).isEqualTo("CHECKED");
+        assertThat(requests.get(3).status().value()).isEqualTo("CHECKED");
+        assertThat(requests.get(4).status().value()).isEqualTo("CHECKED");
     }
 }

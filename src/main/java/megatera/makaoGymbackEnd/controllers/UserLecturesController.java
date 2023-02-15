@@ -5,11 +5,7 @@ import megatera.makaoGymbackEnd.dtos.LectureDto;
 import megatera.makaoGymbackEnd.dtos.UserDto;
 import megatera.makaoGymbackEnd.services.LectureService;
 import megatera.makaoGymbackEnd.services.UserService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
@@ -20,11 +16,11 @@ public class UserLecturesController {
         this.lectureService = lectureService;
     }
 
-    @GetMapping("{id}/lectures")
+    @GetMapping("/lectures")
     public List<LectureDto> findLectureList(
-            @PathVariable Long id
+            @RequestAttribute("userId") Long userId
     ) {
-        return lectureService.userLectures(id);
+        return lectureService.userLectures(userId);
     }
 }
 

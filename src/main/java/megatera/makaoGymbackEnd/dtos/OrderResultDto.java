@@ -1,25 +1,31 @@
 package megatera.makaoGymbackEnd.dtos;
 
 public class OrderResultDto {
-    private Long id;
-    private Long productId;
-    private String ptStartDate;
+    private OrderDetailDto order;
+    private ProductDetailDto productInformation;
+    private OptionResultDto optionInformation;
+    private PtTicketDto ptTicket;
 
-    public OrderResultDto(Long id,Long productId, String ptStartDate) {
-        this.id = id;
-        this.productId = productId;
-        this.ptStartDate = ptStartDate;
+    public OrderResultDto(OrderDetailDto order,ProductDetailDto productInformation, OptionResultDto optionInformation,PtTicketDto ptTicket) {
+        this.order = order;
+        this.productInformation = productInformation;
+        this.optionInformation = optionInformation;
+        this.ptTicket = ptTicket;
     }
 
-    public Long getId() {
-        return id;
+    public OrderDetailDto getOrder() {
+        return order;
     }
 
-    public Long getProductId() {
-        return productId;
+    public ProductDetailDto getProductInformation() {
+        return productInformation;
     }
 
-    public String getPtStartDate() {
-        return ptStartDate;
+    public OptionResultDto getOptionInformation() {
+        return optionInformation;
+    }
+
+    public PtTicketDto getPtTicket() {
+        return ptTicket;
     }
 }
