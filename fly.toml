@@ -25,6 +25,7 @@ processes = []
     force_https = true
     handlers = ["http"]
     port = 80
+    http_options = { response = { headers = { access-control-allow-origin = "*", to-remove = false } } }
 
   [[services.ports]]
     handlers = ["tls", "http"]

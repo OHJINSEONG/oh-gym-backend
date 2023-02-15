@@ -24,6 +24,12 @@ public class UserController {
         return userService.find(userId);
     }
 
+    @GetMapping("test")
+    public String testLogin() {
+        UserDto userDto = userService.testUserCreate();
+
+        return jwtUtil.encode(userDto.getId());
+    }
 
     @PostMapping
     public String register(
