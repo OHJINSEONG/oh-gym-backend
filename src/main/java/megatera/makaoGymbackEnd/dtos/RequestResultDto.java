@@ -13,13 +13,16 @@ public class RequestResultDto {
 
     private String status;
 
+    private Long lectureId;
+
     public RequestResultDto(
             Long id,
             Long senderId,
             Long receiverId,
             String context,
             String message,
-            String status
+            String status,
+            Long lectureId
     ) {
         this.id = id;
         this.senderId = senderId;
@@ -27,6 +30,7 @@ public class RequestResultDto {
         this.context = context;
         this.message = message;
         this.status = status;
+        this.lectureId = lectureId;
     }
 
     public Long getId() {
@@ -51,5 +55,9 @@ public class RequestResultDto {
 
     public String getStatus() {
         return status;
+    }
+
+    public Long getLectureId() {
+        return lectureId;
     }
 }

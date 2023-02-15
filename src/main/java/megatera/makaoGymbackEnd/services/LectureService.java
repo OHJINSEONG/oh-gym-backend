@@ -1,12 +1,20 @@
 package megatera.makaoGymbackEnd.services;
 
-import java.util.List;
 import megatera.makaoGymbackEnd.dtos.LectureDto;
 import megatera.makaoGymbackEnd.dtos.TrainerLecturesDto;
+import megatera.makaoGymbackEnd.exceptions.RequestFailed;
 import megatera.makaoGymbackEnd.models.Lecture;
+import megatera.makaoGymbackEnd.models.Name;
 import megatera.makaoGymbackEnd.repositories.LectureRepository;
+import megatera.makaoGymbackEnd.repositories.PtTicketRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -29,21 +37,50 @@ public class LectureService {
         return new TrainerLecturesDto(lectureDtos, startTime, endTime);
     }
 
-    public LectureDto create(Long trainerId, Long consumerId, String localDateTime, String consumerName) {
-        String[] localDateTimes = localDateTime.split("T");
+    public List<LectureDto> userLectures(Long userId) {
+        List<Lecture> userLectures = lectureRepository.findAllByUserId(userId);
 
-        Lecture lecture = new Lecture(trainerId, consumerId, localDateTimes[0], localDateTimes[1], consumerName);
+        return userLectures.stream().map(Lecture::toDto).toList();
+    }
 
-        lecture.setStatusCreated();
+    public LectureDto reserve(Long consumerId, Long trainerId, String dateTime, String consumerName) {
+        LocalDateTime requestDateTime = LocalDateTime.parse(dateTime);
+
+        String[] localDateTimes = requestDateTime.toString().split("T");
+
+        if (lectureRepository.findByDateAndTimeAndTrainerId(LocalDate.parse(localDateTimes[0]), LocalTime.parse(localDateTimes[1]), trainerId).isPresent()) {
+            throw new RequestFailed(requestDateTime.toString());
+        }
+
+        if (lectureRepository.findByDateAndUserId(LocalDate.parse(localDateTimes[0]), consumerId).isPresent()) {
+            throw new RequestFailed(requestDateTime.toString());
+        }
+
+        Lecture lecture = new Lecture(trainerId, consumerId, LocalDate.parse(localDateTimes[0]),
+                LocalTime.parse(localDateTimes[1]), new Name(consumerName));
+
+        lecture.setStatusReserved();
 
         lectureRepository.save(lecture);
 
         return lecture.toDto();
     }
 
-    public List<LectureDto> userLectures(Long userId) {
-        List<Lecture> userLectures = lectureRepository.findAllByUserId(userId);
+    public LectureDto approve(Long lectureId) {
+        Lecture lecture = lectureRepository.getReferenceById(lectureId);
 
-        return userLectures.stream().map(Lecture::toDto).toList();
+        lecture.approve();
+
+        return lecture.toDto();
+    }
+
+    public void delete(Long lectureId) {
+        Lecture lecture = lectureRepository.getReferenceById(lectureId);
+
+        lectureRepository.delete(lecture);
+    }
+
+    public LectureDto find(Long lectureId) {
+        return lectureRepository.getReferenceById(lectureId).toDto();
     }
 }

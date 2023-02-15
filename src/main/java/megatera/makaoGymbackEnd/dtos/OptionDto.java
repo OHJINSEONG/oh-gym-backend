@@ -1,31 +1,25 @@
 package megatera.makaoGymbackEnd.dtos;
 
 public class OptionDto {
-    private Long id;
-    private Integer ptTimes;
-    private Integer dateOfUse;
-    private Integer price;
+    private Long ptTimes;
+    private Long price;
+    private Long dateOfUse;
 
-    public OptionDto(Long id, Integer ptTimes, Integer dateOfUse, Integer price) {
-        this.id = id;
+    public OptionDto(Long ptTimes, Long price, Long dateOfUse) {
         this.ptTimes = ptTimes;
-        this.dateOfUse = dateOfUse;
         this.price = price;
+        this.dateOfUse = dateOfUse;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Integer getPtTimes() {
+    public Long getPtTimes() {
         return ptTimes;
     }
 
-    public Integer getDateOfUse() {
-        return dateOfUse;
+    public Long getPrice() {
+        return price;
     }
 
-    public Integer getPrice() {
-        return price;
+    public Long getDateOfUse() {
+        return dateOfUse;
     }
 }
