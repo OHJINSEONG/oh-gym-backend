@@ -1,41 +1,53 @@
 package megatera.makaoGymbackEnd.services;
 
-import java.util.List;
 import megatera.makaoGymbackEnd.dtos.OptionDto;
+import megatera.makaoGymbackEnd.dtos.OptionResultDto;
 import megatera.makaoGymbackEnd.dtos.ProductDetailDto;
 import megatera.makaoGymbackEnd.dtos.ProductDto;
-import megatera.makaoGymbackEnd.dtos.ProductsDto;
-import megatera.makaoGymbackEnd.models.Option;
-import megatera.makaoGymbackEnd.models.Product;
+import megatera.makaoGymbackEnd.models.*;
+import megatera.makaoGymbackEnd.repositories.OptionRepository;
 import megatera.makaoGymbackEnd.repositories.ProductRepository;
+import megatera.makaoGymbackEnd.repositories.TrainerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional
 public class ProductService {
     private final ProductRepository productRepository;
+    private final OptionRepository optionRepository;
+    private final TrainerRepository trainerRepository;
 
-    public ProductService(ProductRepository productRepository) {
+    public ProductService(ProductRepository productRepository, OptionRepository optionRepository, TrainerRepository trainerRepository) {
         this.productRepository = productRepository;
+        this.optionRepository = optionRepository;
+        this.trainerRepository = trainerRepository;
     }
 
-    public ProductsDto list() {
+    public List<ProductDetailDto> list() {
         List<Product> products = productRepository.findAll();
 
-        List<ProductDto> productDtos = products.stream().map(Product::toDto).toList();
+        List<Trainer> trainers = trainerRepository.findAll();
 
-        return new ProductsDto(productDtos);
+        List<Option> options = optionRepository.findAll();
+
+        return products.stream().map(product -> product.toDetailDto(options, trainers)).toList();
     }
 
-    public ProductDetailDto find(Long id, List<OptionDto> optionDtos) {
-        Product product = productRepository.getReferenceById(id);
+    public ProductDetailDto find(Long productId) {
+        Product product = productRepository.getReferenceById(productId);
 
-        return product.toDetailDto(optionDtos);
+        List<Trainer> trainers = trainerRepository.findAll();
+
+        List<Option> options = optionRepository.findAll();
+
+        return product.toDetailDto(options, trainers);
     }
 
-    public ProductDto create(String title, Long trainerId) {
-        Product product = new Product(title, trainerId);
+    public ProductDto create(String title, Long trainerId, String type) {
+        Product product = new Product(new Title(title), trainerId, new Category(type));
 
         productRepository.save(product);
 

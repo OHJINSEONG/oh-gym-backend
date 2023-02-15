@@ -8,7 +8,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Calendar;
 
 @Entity
@@ -19,13 +21,13 @@ public class Work {
 
     private Long trainerId;
 
-    private String status;
+    private Status status;
 
-    private String date;
+    private LocalDate date;
 
-    private String startTime;
+    private LocalTime startTime;
 
-    private String endTime;
+    private LocalTime endTime;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -36,24 +38,32 @@ public class Work {
     public Work() {
     }
 
-    public Work(Long trainerId, String startTime, String endTime) {
+    public Work(Long trainerId, LocalTime startTime, LocalTime endTime) {
         this.trainerId = trainerId;
         this.startTime = startTime;
         this.endTime = endTime;
     }
 
-    public static Work fake(Long trainerId) {
-        String startTime = "11:00";
-        String endTime = "15:00";
+    public Work(Long trainerId, LocalDate date, LocalTime startTime, LocalTime endTime) {
+        this.trainerId = trainerId;
+        this.date = date;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
 
-        return new Work(trainerId, startTime, endTime);
+    public static Work fake(Long trainerId) {
+        Work work = new Work(trainerId, LocalDate.parse("2022-12-10"), LocalTime.parse("11:00"), LocalTime.parse("13:00"));
+
+        work.setStatusCreated();
+
+        return work;
     }
 
     public WorkDto toDto() {
-        return new WorkDto(id, status, date, startTime, endTime);
+        return new WorkDto(id, status.value(), date.toString(), startTime.toString(), endTime.toString());
     }
 
-    public String date() {
+    public LocalDate date() {
         return date;
     }
 
@@ -65,7 +75,7 @@ public class Work {
     }
 
     public void setStatusCreated() {
-        this.status = "CREATED";
+        this.status = new Status("CREATED");
     }
 
     public void setDate(Calendar calendar, int dayOfWeek, int startYear, int startMonth, int startDate) {
@@ -81,7 +91,18 @@ public class Work {
         if (calendar.get(Calendar.DAY_OF_WEEK) > dayOfWeek) {
             calendar.set(Calendar.DATE, ((week + dayOfWeek) - calendar.get(Calendar.DAY_OF_WEEK)) + startDate);
         }
+        String year = String.valueOf(calendar.get(Calendar.YEAR));
+        String month = (calendar.get(Calendar.MONTH) + 1) < 10
+                ? "0" + (calendar.get(Calendar.MONTH) + 1)
+                : String.valueOf((calendar.get(Calendar.MONTH) + 1));
+        String date = calendar.get(Calendar.DATE) < 10
+                ? "0" + calendar.get(Calendar.DATE)
+                : String.valueOf(calendar.get(Calendar.DATE));
 
-        this.date = calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DATE);
+        this.date = LocalDate.parse(year + "-" + month + "-" + date);
+    }
+
+    public Status status() {
+        return status;
     }
 }

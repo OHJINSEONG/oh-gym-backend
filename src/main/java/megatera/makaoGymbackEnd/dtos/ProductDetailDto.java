@@ -9,13 +9,22 @@ public class ProductDetailDto {
 
     private Long trainerId;
 
-    private List<OptionDto> options;
+    private String type;
 
-    public ProductDetailDto(Long id, String title, Long trainerId, List<OptionDto> options) {
+    private List<OptionResultDto> options;
+
+    private String trainerUserName;
+
+    private String trainerImage;
+
+    public ProductDetailDto(Long id, String title, Long trainerId, String type, List<OptionResultDto> options, String trainerUserName, String trainerImage) {
         this.id = id;
         this.title = title;
         this.trainerId = trainerId;
+        this.type = type;
         this.options = options;
+        this.trainerUserName = trainerUserName;
+        this.trainerImage = trainerImage;
     }
 
     public Long getId() {
@@ -30,7 +39,19 @@ public class ProductDetailDto {
         return trainerId;
     }
 
-    public List<OptionDto> getOptions() {
+    public String getType() {
+        return type;
+    }
+
+    public List<OptionResultDto> getOptions() {
         return options;
+    }
+
+    public String getTrainerUserName() {
+        return trainerUserName;
+    }
+
+    public String getTrainerImage() {
+        return trainerImage;
     }
 }

@@ -8,8 +8,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -33,5 +34,18 @@ class TrainerServiceTest {
         TrainerResultDto trainerResultDto = trainerService.find(id);
 
         assertThat(trainerResultDto.getUserName()).isEqualTo("오진성");
+    }
+
+    @Test
+    void list(){
+        given(trainerRepository.findAll()).willReturn(List.of(
+                Trainer.fake(new UserName("오진성")),
+                Trainer.fake(new UserName("오진욱")),
+                Trainer.fake(new UserName("배준형"))
+        ));
+
+        List<TrainerResultDto> trainerResultDtos = trainerService.list();
+
+        assertThat(trainerResultDtos).hasSize(3);
     }
 }

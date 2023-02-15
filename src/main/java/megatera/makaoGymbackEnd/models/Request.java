@@ -1,12 +1,14 @@
 package megatera.makaoGymbackEnd.models;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Objects;
+import megatera.makaoGymbackEnd.dtos.RequestResultDto;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import megatera.makaoGymbackEnd.dtos.RequestResultDto;
+import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 public class Request {
@@ -18,30 +20,41 @@ public class Request {
 
     private Long receiverId;
 
-    private String context;
+    private Long lectureId;
 
-    private String message;
+    private LocalDateTime requestDateTime;
 
-    private String status;
+    private RequestMessage requestMessage;
+
+    private Status status;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
     public Request() {
     }
 
-    public Request(Long senderId, Long receiverId, String context) {
+    public Request(Long senderId, Long receiverId, LocalDateTime requestDateTime, Long lectureId) {
         this.senderId = senderId;
         this.receiverId = receiverId;
-        this.context = context;
+        this.requestDateTime = requestDateTime;
+        this.lectureId = lectureId;
     }
 
-    public static Request fake(String context) {
-        return new Request(1L, 1L, context);
+    public static Request fake(String requestDateTime) {
+        Request request =  new Request(1L, 1L, LocalDateTime.parse(requestDateTime), 1L);
+
+        request.toCreated();
+
+        request.setContext("하이");
+
+        return request;
     }
 
-    public String message() {
-        return message;
-    }
-
-    public String status() {
+    public Status status() {
         return status;
     }
 
@@ -53,26 +66,27 @@ public class Request {
     }
 
     public RequestResultDto toDto() {
-        return new RequestResultDto(id, senderId, receiverId, context, message, status);
+        return new RequestResultDto(id, senderId, receiverId, requestDateTime.toString(), requestMessage.value(), status.value(), lectureId);
     }
 
-    public void setContext(String type, String senderName) {
-        if (type.equals("requestPt")) {
-            String requestDate = LocalDateTime.parse(context).format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 hh시"));
-
-            this.message = senderName + "님 " + requestDate + "에 피티 등록 요청.";
-        }
-    }
 
     public void toCreated() {
-        this.status = "CREATED";
+        this.status = new Status("CREATED");
     }
 
     public void toChecked() {
-        this.status = "CHECKED";
+        this.status.toChecked();
     }
 
     public void toDeleted() {
-        this.status = "DELETED";
+        this.status.toDeleted();
+    }
+
+    public void setContext(String senderName) {
+        this.requestMessage = new RequestMessage(requestDateTime.toString(), senderName);
+    }
+
+    public RequestMessage requestMessage() {
+        return requestMessage;
     }
 }

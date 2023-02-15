@@ -1,6 +1,7 @@
 package megatera.makaoGymbackEnd.services;
 
 import megatera.makaoGymbackEnd.dtos.LectureDto;
+import megatera.makaoGymbackEnd.dtos.ScheduleDetailDto;
 import megatera.makaoGymbackEnd.dtos.ScheduleDto;
 import megatera.makaoGymbackEnd.dtos.WorkDto;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ public class ScheduleService {
         List<String> trainerSchedules = new ArrayList<>();
 
         for (WorkDto workDto : workDtos) {
+
             List<String> trainerLectures = lectureDtos.stream()
                     .filter(lectureDto -> lectureDto.getDate().equals(workDto.getDate()))
                     .map(LectureDto::getTime)
@@ -32,5 +34,30 @@ public class ScheduleService {
             trainerSchedules.removeAll(trainerLectures);
         }
         return new ScheduleDto(trainerSchedules);
+    }
+
+    public List<ScheduleDetailDto> scheduleList(List<LectureDto> lectureDtos, List<WorkDto> workDtos) {
+        List<ScheduleDetailDto> scheduleDetailDtos = new ArrayList<>();
+
+        for (WorkDto workDto : workDtos) {
+            List<String> trainerSchedules = new ArrayList<>();
+            List<String> trainerLectures = lectureDtos.stream()
+                    .filter(lectureDto -> lectureDto.getDate().equals(workDto.getDate()))
+                    .map(LectureDto::getTime)
+                    .toList();
+
+            int startTime = Integer.parseInt(workDto.getStartTime().split(":")[0]);
+            int endTime = Integer.parseInt(workDto.getEndTime().split(":")[0]);
+
+            for (int i = startTime; i < endTime; i += 1) {
+                String time = String.valueOf(i) + ":00";
+
+                trainerSchedules.add(time);
+            }
+            trainerSchedules.removeAll(trainerLectures);
+
+            scheduleDetailDtos.add(new ScheduleDetailDto(trainerSchedules,workDto.getDate()));
+        }
+        return scheduleDetailDtos;
     }
 }

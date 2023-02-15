@@ -2,9 +2,13 @@ package megatera.makaoGymbackEnd.dtos;
 
 public class WorkDto {
     private Long id;
+
     private String status;
+
     private String date;
+
     private String startTime;
+
     private String endTime;
 
     public WorkDto(Long id, String status, String date, String startTime, String endTime) {

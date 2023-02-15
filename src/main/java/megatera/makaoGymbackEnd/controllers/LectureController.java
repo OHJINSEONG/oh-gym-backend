@@ -1,51 +1,39 @@
 package megatera.makaoGymbackEnd.controllers;
 
-import megatera.makaoGymbackEnd.dtos.*;
+import megatera.makaoGymbackEnd.dtos.ErrorDto;
+import megatera.makaoGymbackEnd.dtos.LectureDto;
+import megatera.makaoGymbackEnd.dtos.RequestErrorDto;
 import megatera.makaoGymbackEnd.exceptions.RequestFailed;
 import megatera.makaoGymbackEnd.services.LectureService;
-import megatera.makaoGymbackEnd.services.TrainerService;
-import megatera.makaoGymbackEnd.services.UserService;
+import megatera.makaoGymbackEnd.services.PtTicketService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/lectures")
 public class LectureController {
     private final LectureService lectureService;
-    private final TrainerService trainerService;
-    private final UserService userService;
+    private final PtTicketService ptTicketService;
 
     public LectureController(LectureService lectureService,
-                             TrainerService trainerService,
-                             UserService userService) {
+                             PtTicketService ptTicketService) {
         this.lectureService = lectureService;
-        this.trainerService = trainerService;
-        this.userService = userService;
+        this.ptTicketService = ptTicketService;
     }
 
-    @GetMapping("{id}")
-    public List<LectureDto> list(
-            @PathVariable("id") Long trainerId
+
+    @DeleteMapping("{lectureId}")
+    public void delete(
+            @PathVariable Long lectureId,
+            @RequestAttribute("userId") Long userId
     ) {
-        return lectureService.list(trainerId);
+        LectureDto lectureDto = lectureService.find(lectureId);
 
-    }
+        if (lectureDto.getStatus().equals("APPROVE")) {
+            ptTicketService.cancelPt(userId);
+        }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public LectureDto register(
-            @RequestBody LectureRegisterDto lectureRegisterDto
-    ) {
-        UserDto userDto = userService.find();
-
-        return lectureService.create(
-                lectureRegisterDto.getTrainerId(),
-                lectureRegisterDto.getConsumerId(),
-                lectureRegisterDto.getDate(),
-                userDto.getName()
-        );
+        lectureService.delete(lectureId);
     }
 
     @ExceptionHandler(RequestFailed.class)

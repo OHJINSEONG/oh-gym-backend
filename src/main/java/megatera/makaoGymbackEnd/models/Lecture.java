@@ -1,14 +1,14 @@
 package megatera.makaoGymbackEnd.models;
 
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import javax.persistence.*;
-
 import megatera.makaoGymbackEnd.dtos.LectureDto;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
+import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 public class Lecture {
@@ -22,11 +22,13 @@ public class Lecture {
 
     private Status status;
 
-    private String date;
+    private LocalDate date;
 
-    private String time;
+    private LocalTime time;
 
-    private String consumerName;
+    @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "consumer_name"))
+    private Name consumerName;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -37,7 +39,7 @@ public class Lecture {
     public Lecture() {
     }
 
-    public Lecture(Long trainerId, Long userId, String date, String time, String consumerName) {
+    public Lecture(Long trainerId, Long userId, LocalDate date, LocalTime time, Name consumerName) {
         this.trainerId = trainerId;
         this.userId = userId;
         this.date = date;
@@ -51,14 +53,22 @@ public class Lecture {
         String time = "11:00";
         String consumerName = "오진욱";
 
-        return new Lecture(trainerId, consumerId, date, time, consumerName);
+        Lecture lecture = new Lecture(trainerId, consumerId, LocalDate.parse(date), LocalTime.parse(time), new Name(consumerName));
+
+        lecture.toCreated();
+
+        return lecture;
+    }
+
+    private void toCreated() {
+        this.status = new Status("CREATED");
     }
 
     public LectureDto toDto() {
-        return new LectureDto(id, consumerName, status, date, time);
+        return new LectureDto(id, consumerName.value(), status.value(), date.toString(), time.toString());
     }
 
-    public String date() {
+    public LocalDate date() {
         return date;
     }
 
@@ -69,9 +79,15 @@ public class Lecture {
                 this.id.equals(((Lecture) other).id);
     }
 
-    public void setStatusCreated() {
-        this.status = "CREATED";
+    public void approve() {
+        this.status.toApprove();
+    }
+
+    public void setStatusReserved() {
+        this.status = new Status("RESERVED");
+    }
+
+    public Status status() {
+        return status;
     }
 }
-
-// Work 피티 2시 6시  ㄴㅇㄴ

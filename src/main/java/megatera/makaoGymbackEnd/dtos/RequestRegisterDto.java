@@ -1,8 +1,6 @@
 package megatera.makaoGymbackEnd.dtos;
 
 public class RequestRegisterDto {
-    private Long senderId;
-
     private Long receiverId;
 
     private String type;
@@ -11,16 +9,14 @@ public class RequestRegisterDto {
 
     private String senderName;
 
-    public RequestRegisterDto(Long senderId, Long receiverId, String type, String context, String senderName) {
-        this.senderId = senderId;
+    public RequestRegisterDto() {
+    }
+
+    public RequestRegisterDto(Long receiverId, String type, String context, String senderName) {
         this.receiverId = receiverId;
         this.type = type;
         this.context = context;
         this.senderName = senderName;
-    }
-
-    public Long getSenderId() {
-        return senderId;
     }
 
     public Long getReceiverId() {
