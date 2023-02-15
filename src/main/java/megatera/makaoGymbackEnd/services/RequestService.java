@@ -1,12 +1,13 @@
 package megatera.makaoGymbackEnd.services;
 
-import java.util.List;
 import megatera.makaoGymbackEnd.dtos.RequestResultDto;
-import megatera.makaoGymbackEnd.exceptions.RequestFailed;
 import megatera.makaoGymbackEnd.models.Request;
 import megatera.makaoGymbackEnd.repositories.RequestRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Transactional
@@ -17,14 +18,14 @@ public class RequestService {
         this.requestRepository = requestRepository;
     }
 
-    public RequestResultDto create(Long senderId, Long receiverId, String type, String context, String senderName) {
-        Request request = new Request(senderId, receiverId, context);
-        request.setContext(type, senderName);
-        request.toCreated();
+    public RequestResultDto create(Long senderId, Long receiverId, Long lectureId, String dateTime, String senderName) {
+        LocalDateTime requestDateTime = LocalDateTime.parse(dateTime);
 
-        if(requestRepository.findByContext(context).isPresent()){
-            throw new RequestFailed(context);
-        }
+        Request request = new Request(senderId, receiverId, requestDateTime, lectureId);
+
+        request.setContext(senderName);
+
+        request.toCreated();
 
         requestRepository.save(request);
 
@@ -45,11 +46,7 @@ public class RequestService {
         return requests;
     }
 
-    public Request delete(Long id) {
-        Request request = requestRepository.getReferenceById(id);
-
-        request.toDeleted();
-
-        return request;
+    public void delete(Long id) {
+        requestRepository.deleteById(id);
     }
 }

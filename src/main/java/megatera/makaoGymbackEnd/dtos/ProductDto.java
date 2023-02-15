@@ -8,10 +8,13 @@ public class ProductDto {
 
     private Long trainerId;
 
-    public ProductDto(Long id, String title, Long trainerId) {
+    private String type;
+
+    public ProductDto(Long id, String title, String type, Long trainerId) {
         this.id = id;
         this.title = title;
         this.trainerId = trainerId;
+        this.type = type;
     }
 
     public Long getId() {
@@ -24,5 +27,9 @@ public class ProductDto {
 
     public Long getTrainerId() {
         return trainerId;
+    }
+
+    public String getType() {
+        return type;
     }
 }

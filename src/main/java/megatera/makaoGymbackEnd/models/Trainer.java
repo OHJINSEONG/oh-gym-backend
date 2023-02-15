@@ -1,15 +1,14 @@
 package megatera.makaoGymbackEnd.models;
 
-import java.time.LocalDateTime;
-import javax.persistence.AttributeOverride;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import megatera.makaoGymbackEnd.dtos.TrainerResultDto;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 public class Trainer {
@@ -19,15 +18,21 @@ public class Trainer {
 
     private UserName userName;
 
-    private String name;
+    private Name name;
 
-    @Embedded
-    @AttributeOverride(name = "value", column = @Column(name = "start_time"))
-    private TaskTime startTime;
+    private PhoneNumber phoneNumber;
 
-    @Embedded
-    @AttributeOverride(name = "value", column = @Column(name = "end_time"))
-    private TaskTime endTime;
+    private Age age;
+
+    private Gender gender;
+
+    private String image;
+
+    private LocalTime startTime;
+
+    private LocalTime endTime;
+
+    private Status status;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -38,18 +43,85 @@ public class Trainer {
     public Trainer() {
     }
 
-    public Trainer(UserName userName, String name, TaskTime startTime, TaskTime endTime) {
+    public Trainer(UserName userName, Name name, PhoneNumber phoneNumber, Age age, Gender gender, String image, LocalTime startTime, LocalTime endTime) {
         this.userName = userName;
         this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.age = age;
+        this.gender = gender;
+        this.image = image;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
+    public Trainer(Long id, UserName userName, Name name, PhoneNumber phoneNumber, Age age, Gender gender, String image, LocalTime startTime, LocalTime endTime) {
+        this.id = id;
+        this.userName = userName;
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.age = age;
+        this.gender = gender;
+        this.image = image;
         this.startTime = startTime;
         this.endTime = endTime;
     }
 
     public static Trainer fake(UserName userName) {
-        return new Trainer(userName, "오진성", new TaskTime("09:00"), new TaskTime("18:00"));
+        Trainer trainer = new Trainer(1L, userName, new Name("오진성"), new PhoneNumber("01085568955"), new Age("971117-1932123"), new Gender("남자"), "Qweqwe", LocalTime.parse("09:00"), LocalTime.parse("18:00"));
+
+        trainer.toCreated();
+
+        return trainer;
     }
 
     public TrainerResultDto toDto() {
-        return new TrainerResultDto(id, userName.value(), name, startTime.value(), endTime.value());
+        return new TrainerResultDto(
+                id,
+                userName.value(),
+                name.value(),
+                startTime.toString(),
+                endTime.toString(),
+                status.value(),
+                phoneNumber.value(),
+                age.value(),
+                gender.value(),
+                image
+        );
+    }
+
+    public UserName userName() {
+        return userName;
+    }
+
+    public Name name() {
+        return name;
+    }
+
+    public LocalTime startTime() {
+        return startTime;
+    }
+
+    public LocalTime endTime() {
+        return endTime;
+    }
+
+    public Status status() {
+        return status;
+    }
+
+    public Age age() {
+        return age;
+    }
+
+    public String image() {
+        return image;
+    }
+
+    public Long id() {
+        return id;
+    }
+
+    private void toCreated() {
+        this.status = new Status("CREATED");
     }
 }

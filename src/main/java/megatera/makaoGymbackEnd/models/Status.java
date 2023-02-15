@@ -1,15 +1,12 @@
 package megatera.makaoGymbackEnd.models;
 
-import megatera.makaoGymbackEnd.dtos.OptionDto;
-
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import java.util.Objects;
 
 @Embeddable
 public class Status {
+    @Column(name = "status")
     private String value;
 
     public Status() {
@@ -38,5 +35,33 @@ public class Status {
     @Override
     public int hashCode() {
         return Objects.hash(value);
+    }
+
+    public void toChecked() {
+        this.value = "CHECKED";
+    }
+
+    public void toDeleted() {
+        this.value = "DELETED";
+    }
+
+    public void toUsed() {
+        this.value = "INUSE";
+    }
+
+    public void toReserved() {
+        this.value = "RESERVED";
+    }
+
+    public void toAvailable() {
+        this.value = "AVAILABLE";
+    }
+
+    public void toComplete() {
+        this.value = "COMPLETE";
+    }
+
+    public void toApprove() {
+        this.value = "APPROVE";
     }
 }

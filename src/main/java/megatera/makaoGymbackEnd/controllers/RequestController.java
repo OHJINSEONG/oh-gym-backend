@@ -1,38 +1,41 @@
 package megatera.makaoGymbackEnd.controllers;
 
 import java.util.List;
-import megatera.makaoGymbackEnd.dtos.RequestChangeStatusDto;
+
+import megatera.makaoGymbackEnd.dtos.LectureDto;
 import megatera.makaoGymbackEnd.dtos.RequestRegisterDto;
 import megatera.makaoGymbackEnd.dtos.RequestResultDto;
+import megatera.makaoGymbackEnd.services.LectureService;
 import megatera.makaoGymbackEnd.services.RequestService;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/requests")
 public class RequestController {
     private final RequestService requestService;
+    private final LectureService lectureService;
 
-    public RequestController(RequestService requestService) {
+    public RequestController(RequestService requestService, LectureService lectureService) {
         this.requestService = requestService;
+        this.lectureService = lectureService;
     }
 
     @PostMapping
     public RequestResultDto create(
-            @RequestBody RequestRegisterDto requestRegisterDto
+            @RequestBody RequestRegisterDto requestRegisterDto,
+            @RequestAttribute("userId") Long userId
     ) {
-        return requestService.create(
-                requestRegisterDto.getSenderId(),
+        LectureDto lectureDto = lectureService.reserve(
+                userId,
                 requestRegisterDto.getReceiverId(),
-                requestRegisterDto.getType(),
+                requestRegisterDto.getContext(),
+                requestRegisterDto.getSenderName()
+        );
+
+        return requestService.create(
+                userId,
+                requestRegisterDto.getReceiverId(),
+                lectureDto.getId(),
                 requestRegisterDto.getContext(),
                 requestRegisterDto.getSenderName()
         );

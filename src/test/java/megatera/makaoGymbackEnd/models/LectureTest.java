@@ -10,46 +10,25 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class LectureTest {
-//    @Test
-//    void setDate() {
-//        Long orderId = 1L;
-//        Lecture lecture = Lecture.fake(orderId);
-//
-//        assertThat(lecture.date()).isEqualTo(null);
-//
-//        Calendar calendar = Calendar.getInstance();
-//
-//        int tuesday = 3;
-//
-//        lecture.setDate(calendar, tuesday, "2022-12-06");
-//
-//        assertThat(lecture.date()).isEqualTo("2022-12-06");
-//
-//        int monday = 2;
-//
-//        lecture.setDate(calendar, monday, "2022-12-06");
-//
-//        assertThat(lecture.date()).isEqualTo("2022-12-12");
-//
-//        int nextTuesday = 10;
-//
-//        lecture.setDate(calendar, nextTuesday, "2022-12-6");
-//
-//        assertThat(lecture.date()).isEqualTo("2022-12-13");
-//
-//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일");
-//    }
-
     @Test
-    void toDto() {
-        String date = "2022-12-08T11:00";
+    void setStatusReserved() {
+        String date = "2022-12-08";
+
         Lecture lecture = Lecture.fake(date);
 
-        lecture.setStatusCreated();
+        lecture.setStatusReserved();
 
-        LectureDto lectureDto = lecture.toDto();
+        assertThat(lecture.status().value()).isEqualTo("RESERVED");
+    }
 
-        assertThat(lectureDto.getDate()).isEqualTo("2022-12-08T11:00");
-        assertThat(lectureDto.getStatus()).isEqualTo("CREATED");
+    @Test
+    void approve() {
+        String date = "2022-12-08";
+
+        Lecture lecture = Lecture.fake(date);
+
+        lecture.approve();
+
+        assertThat(lecture.status().value()).isEqualTo("APPROVE");
     }
 }

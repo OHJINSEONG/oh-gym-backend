@@ -6,6 +6,8 @@ import megatera.makaoGymbackEnd.repositories.WorkRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -19,8 +21,8 @@ public class WorkService {
         this.workRepository = workRepository;
     }
 
-    public  List<WorkDto> findWithDate(String date) {
-        return workRepository.findAllByDate(date);
+    public List<WorkDto> findWithDate(Long trainerId, LocalDate date) {
+        return workRepository.findAllByTrainerIdAndDate(trainerId, date).stream().map(Work::toDto).toList();
     }
 
     public List<WorkDto> createWork(
@@ -29,7 +31,8 @@ public class WorkService {
             Integer countOfWeek,
             String startTime,
             String endTime,
-            List<Integer> dayOfWeek) {
+            List<Integer> dayOfWeek
+    ) {
         List<WorkDto> workDtos = new ArrayList<>();
 
         Calendar calendar = Calendar.getInstance();
@@ -52,7 +55,7 @@ public class WorkService {
                 continue;
             }
 
-            Work work = new Work(trainerId, startTime, endTime);
+            Work work = new Work(trainerId, LocalTime.parse(startTime), LocalTime.parse(endTime));
             work.setStatusCreated();
             work.setDate(calendar, dayOfweek, startYear, startMonth, startDate);
             workRepository.save(work);

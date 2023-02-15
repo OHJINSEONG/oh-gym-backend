@@ -1,39 +1,44 @@
 package megatera.makaoGymbackEnd.dtos;
 
-import megatera.makaoGymbackEnd.models.UserName;
-
 public class UserDto {
     private Long id;
-    private UserName userName;
-    private String name;
-    private Integer ptTimes;
-    private Integer periodOfUse;
+    private String userName;
+    private String email;
+    private Long ptTimes;
+    private Long periodOfUse;
+    private String status;
 
-    public UserDto(Long id, UserName userName, String name, Integer ptTimes, Integer periodOfUse) {
+    public UserDto(Long id, String userName, String email, Long ptTimes, Long periodOfUse, String status) {
         this.id = id;
         this.userName = userName;
-        this.name = name;
+        this.email = email;
         this.ptTimes = ptTimes;
         this.periodOfUse = periodOfUse;
+        this.status = status;
+
     }
 
     public Long getId() {
         return id;
     }
 
-    public UserName getUserName() {
+    public String getUserName() {
         return userName;
     }
 
-    public String getName() {
-        return name;
+    public String getEmail() {
+        return email;
     }
 
-    public Integer getPtTimes() {
+    public Long getPtTimes() {
         return ptTimes;
     }
 
-    public Integer getPeriodOfUse() {
+    public Long getPeriodOfUse() {
         return periodOfUse;
+    }
+
+    public String getStatus() {
+        return status;
     }
 }

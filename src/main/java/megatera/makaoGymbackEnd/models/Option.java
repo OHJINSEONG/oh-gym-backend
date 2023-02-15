@@ -1,10 +1,12 @@
 package megatera.makaoGymbackEnd.models;
 
+import megatera.makaoGymbackEnd.dtos.OptionResultDto;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Objects;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import megatera.makaoGymbackEnd.dtos.OptionDto;
 
 @Entity
 public class Option {
@@ -14,36 +16,54 @@ public class Option {
 
     private Long productId;
 
-    private Integer dateOfUse;
+    private Long dateOfUse;
 
-    private Integer ptTimes;
+    @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "pt_times"))
+    private Count ptTimes;
 
-    private Integer price;
+    @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "price"))
+    private Amount price;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
     public Option() {
     }
 
-    public Option(Long productId, Integer ptTimes, Integer dateOfUse, Integer price) {
+    public Option(Long productId, Count ptTimes, Amount price, Long dateOfUse) {
         this.productId = productId;
         this.ptTimes = ptTimes;
-        this.dateOfUse = dateOfUse;
         this.price = price;
+        this.dateOfUse = dateOfUse;
+    }
+
+    public static Option fake(Long productId) {
+        Count count = new Count(12L);
+        Amount amount = new Amount(360000L);
+        Long dateOfUse = 90L;
+
+        return new Option(productId, count, amount, dateOfUse);
     }
 
     public Long productId() {
         return productId;
     }
 
-    public Integer dateOfUse() {
-        return dateOfUse;
-    }
-
-    public Integer ptTimes() {
+    public Count ptTimes() {
         return ptTimes;
     }
 
-    public Integer price() {
+    public Amount price() {
         return price;
+    }
+
+    public Long dateOfUse() {
+        return dateOfUse;
     }
 
     @Override
@@ -51,17 +71,12 @@ public class Option {
         return other != null &&
                 other.getClass() == Option.class &&
                 Objects.equals(this.id, ((Option) other).id) &&
-                Objects.equals(this.dateOfUse, ((Option) other).dateOfUse) &&
                 Objects.equals(this.ptTimes, ((Option) other).ptTimes) &&
+                Objects.equals(this.dateOfUse, ((Option) other).dateOfUse) &&
                 Objects.equals(this.price, ((Option) other).price);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, dateOfUse, ptTimes, price);
-    }
-
-    public OptionDto toDto() {
-        return new OptionDto(id, ptTimes, dateOfUse, price);
+    public OptionResultDto toDto() {
+        return new OptionResultDto(id, ptTimes.value(), price.value(), dateOfUse);
     }
 }

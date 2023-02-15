@@ -1,26 +1,36 @@
 package megatera.makaoGymbackEnd.controllers;
 
-import java.util.List;
-import megatera.makaoGymbackEnd.dtos.LectureDto;
 import megatera.makaoGymbackEnd.dtos.UserDto;
-import megatera.makaoGymbackEnd.services.LectureService;
+import megatera.makaoGymbackEnd.dtos.KakaoAccessTokenDto;
 import megatera.makaoGymbackEnd.services.UserService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import megatera.makaoGymbackEnd.utils.JwtUtil;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
+    private final JwtUtil jwtUtil;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, JwtUtil jwtUtil) {
         this.userService = userService;
+        this.jwtUtil = jwtUtil;
     }
 
     @GetMapping
-    public UserDto find() {
-        return userService.find();
+    public UserDto find(
+            @RequestAttribute("userId") Long userId
+    ) {
+        return userService.find(userId);
+    }
+
+
+    @PostMapping
+    public String register(
+            @RequestBody KakaoAccessTokenDto kakaoAccessTokenDto
+    ) {
+        UserDto userDto = userService.create(kakaoAccessTokenDto.getKakaoAccessToken());
+
+        return jwtUtil.encode(userDto.getId());
     }
 }

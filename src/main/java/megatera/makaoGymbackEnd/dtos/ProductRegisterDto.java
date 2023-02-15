@@ -1,18 +1,23 @@
 package megatera.makaoGymbackEnd.dtos;
 
 import java.util.List;
-import megatera.makaoGymbackEnd.models.Option;
 
 public class ProductRegisterDto {
     private String title;
 
     private Long trainerId;
 
-    private List<Option> options;
+    private String type;
 
-    public ProductRegisterDto(String title, Long trainerId, List<Option> options) {
+    private List<OptionDto> options;
+
+    public ProductRegisterDto() {
+    }
+
+    public ProductRegisterDto(String title, Long trainerId, String type, List<OptionDto> options) {
         this.title = title;
         this.trainerId = trainerId;
+        this.type = type;
         this.options = options;
     }
 
@@ -24,7 +29,11 @@ public class ProductRegisterDto {
         return trainerId;
     }
 
-    public List<Option> getOptions() {
+    public String getType() {
+        return type;
+    }
+
+    public List<OptionDto> getOptions() {
         return options;
     }
 }
