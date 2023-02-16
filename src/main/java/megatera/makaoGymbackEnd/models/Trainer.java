@@ -121,7 +121,7 @@ public class Trainer {
         return id;
     }
 
-    private void toCreated() {
+    public void toCreated() {
         this.status = new Status("CREATED");
     }
 }
