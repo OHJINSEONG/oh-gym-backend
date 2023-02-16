@@ -1,12 +1,11 @@
 package megatera.makaoGymbackEnd.admin.controllers;
 
 import megatera.makaoGymbackEnd.dtos.TrainerManagementDto;
+import megatera.makaoGymbackEnd.dtos.TrainerRegisterDto;
+import megatera.makaoGymbackEnd.dtos.TrainerResultDto;
 import megatera.makaoGymbackEnd.services.AdminTrainerService;
 import megatera.makaoGymbackEnd.services.TrainerService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,5 +25,12 @@ public class AdminTrainerController {
             @PathVariable Long trainerId
     ) {
         return adminTrainerService.management(trainerId);
+    }
+
+    @PostMapping
+    public TrainerResultDto create(
+            @RequestBody TrainerRegisterDto trainerRegisterDto
+    ) {
+        return adminTrainerService.create(trainerRegisterDto.getName(), trainerRegisterDto.getUserName(), trainerRegisterDto.getImage());
     }
 }
