@@ -11,6 +11,7 @@ public class OrderRegisterDto {
     private String consumerPhoneNumber;
     private String consumerAddress;
     private String consumerAddressDetail;
+    private String type;
 
     public OrderRegisterDto() {
     }
@@ -25,7 +26,8 @@ public class OrderRegisterDto {
             String consumerBirthDate,
             String consumerPhoneNumber,
             String consumerAddress,
-            String consumerAddressDetail
+            String consumerAddressDetail,
+            String type
     ) {
         this.productId = productId;
         this.optionId = optionId;
@@ -37,6 +39,7 @@ public class OrderRegisterDto {
         this.consumerPhoneNumber = consumerPhoneNumber;
         this.consumerAddress = consumerAddress;
         this.consumerAddressDetail = consumerAddressDetail;
+        this.type = type;
     }
 
     public Long getProductId() {
@@ -77,5 +80,9 @@ public class OrderRegisterDto {
 
     public String getConsumerAddressDetail() {
         return consumerAddressDetail;
+    }
+
+    public String getType() {
+        return type;
     }
 }

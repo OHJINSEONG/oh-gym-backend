@@ -82,7 +82,8 @@ public class OrderService {
             String consumerAddressDetail,
             String consumerBirthDate,
             String consumerPhoneNumber,
-            String cunsumerName
+            String cunsumerName,
+            String type
     ) {
         Order order = new Order(userId, productId, optionId, itemName, totalPrice, consumerAddress, consumerGender,
                 consumerAddressDetail, consumerBirthDate, consumerPhoneNumber, cunsumerName);
@@ -91,12 +92,14 @@ public class OrderService {
 
         OptionResultDto optionResultDto = optionService.find(optionId);
 
-        String kakaoUrl = kakaopayService.kakaoPayReady(itemName, totalPrice).getNext_redirect_pc_url();
-
         orderRepository.save(order);
 
         ticketService.create(userId, productDetailDto.getTrainerId(), productDetailDto.getId(), order.id(), optionResultDto.getDateOfUse(), optionResultDto.getPtTimes(), productDetailDto.getType());
 
-        return kakaoUrl;
+        if (type.equals("Test")) {
+            return "https://oh-gym.fly.dev/orders/success";
+        }
+
+        return kakaopayService.kakaoPayReady(itemName, totalPrice).getNext_redirect_pc_url();
     }
 }
