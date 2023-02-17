@@ -4,6 +4,7 @@ package megatera.makaoGymbackEnd.services;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import megatera.makaoGymbackEnd.exceptions.InValidEmail;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,12 +32,13 @@ public class KakaoService {
             StringBuilder sb = new StringBuilder();
             sb.append("grant_type=authorization_code");
             sb.append("&client_id=f99c39ffcdf63597195c1d3678b78fde");
-            sb.append("&redirect_uri=http://localhost:8080/auth/kakao/callback");
+            sb.append("&redirect_uri=https://oh-gym.fly.dev/auth/kakao/callback");
             sb.append("&code=" + code);
             bw.write(sb.toString());
             bw.flush();
 
             int responseCode = conn.getResponseCode();
+            System.out.println(""+responseCode);
             System.out.println("responseCode : " + responseCode);
 
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -94,6 +96,12 @@ public class KakaoService {
 
             String nickname = properties.getAsJsonObject().get("nickname").getAsString();
             String email = kakao_account.getAsJsonObject().get("email").getAsString();
+
+            System.out.println(email);
+
+            if(email == null){
+                throw new InValidEmail();
+            }
 
             userInformation.put("nickname", nickname);
             userInformation.put("email", email);

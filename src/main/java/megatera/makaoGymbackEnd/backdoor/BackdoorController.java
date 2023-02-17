@@ -37,7 +37,7 @@ public class BackdoorController {
         jdbcTemplate.execute("DELETE FROM work");
         jdbcTemplate.execute("DELETE FROM request");
         jdbcTemplate.execute("DELETE FROM trainer");
-//        jdbcTemplate.execute("DELETE FROM person");
+        jdbcTemplate.execute("DELETE FROM person");
         jdbcTemplate.execute("DELETE FROM option");
         jdbcTemplate.execute("DELETE FROM product");
         jdbcTemplate.execute("DELETE FROM orders");
