@@ -12,7 +12,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/stomp/chat")
-                .setAllowedOrigins("http://localhost:8080", "http://localhost:8081")
+                .setAllowedOrigins("http://localhost:8080", "http://localhost:8081","https://oh-gym.fly.dev","https://oh-gym-admin.fly.dev")
                 .withSockJS();
     }
 

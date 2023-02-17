@@ -1,13 +1,15 @@
 package megatera.makaoGymbackEnd.controllers;
 
-import megatera.makaoGymbackEnd.dtos.KakaoAccessTokenDto;
-import megatera.makaoGymbackEnd.dtos.LoginResultDto;
-import megatera.makaoGymbackEnd.dtos.UserDto;
+import megatera.makaoGymbackEnd.dtos.*;
+import megatera.makaoGymbackEnd.exceptions.InValidEmail;
+import megatera.makaoGymbackEnd.exceptions.RequestFailed;
 import megatera.makaoGymbackEnd.services.KakaoService;
 import megatera.makaoGymbackEnd.services.UserService;
 import megatera.makaoGymbackEnd.utils.JwtUtil;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Optional;
 
@@ -44,5 +46,17 @@ public class KakaoSessionController {
             @RequestBody KakaoAccessTokenDto kakaoAccessTokenDto
     ) {
         kakaoService.logout(kakaoAccessTokenDto.getKakaoAccessToken());
+    }
+
+    @ExceptionHandler(InValidEmail.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDto invalidEmail(InValidEmail inValidEmail) {
+        return new InValidEmailErrorDto(inValidEmail.getMessage());
+    }
+
+    @ExceptionHandler(IOException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDto exception() {
+        return new InValidEmailErrorDto("카카오 이메일 잘못");
     }
 }

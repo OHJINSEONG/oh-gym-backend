@@ -45,7 +45,8 @@ public class OrderController {
                 orderRegisterDto.getConsumerAddressDetail(),
                 orderRegisterDto.getConsumerBirthDate(),
                 orderRegisterDto.getConsumerPhoneNumber(),
-                orderRegisterDto.getCunsumerName()
+                orderRegisterDto.getCunsumerName(),
+                orderRegisterDto.getType()
         );
     }
 

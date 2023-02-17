@@ -46,9 +46,9 @@ public class KakaoPayService {
         params.add("total_amount", String.valueOf(totalAmount));
         params.add("tax_free_amount", "1000");
         params.add("quantity", "1");
-        params.add("approval_url", "http://localhost:8080/orders/success");
-        params.add("cancel_url", "http://localhost:8080/orders/cancel");
-        params.add("fail_url", "http://localhost:8080/orders/fail");
+        params.add("approval_url", "https://oh-gym.fly.dev/orders/success");
+        params.add("cancel_url", "https://oh-gym.fly.dev/orders/cancel");
+        params.add("fail_url", "https://oh-gym.fly.dev/orders/fail");
 
         HttpEntity<MultiValueMap<String, String>> body = new HttpEntity<>(params, headers);
 
