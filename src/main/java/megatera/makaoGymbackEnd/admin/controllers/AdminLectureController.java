@@ -35,4 +35,11 @@ public class AdminLectureController {
 
         return lectureService.approve(lectureId);
     }
+
+    @DeleteMapping("{lectureId}")
+    public void delete(
+            @PathVariable Long lectureId
+    ) {
+        lectureService.delete(lectureId);
+    }
 }
