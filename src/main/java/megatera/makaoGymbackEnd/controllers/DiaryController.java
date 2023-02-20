@@ -3,6 +3,7 @@ package megatera.makaoGymbackEnd.controllers;
 import megatera.makaoGymbackEnd.dtos.*;
 import megatera.makaoGymbackEnd.services.DiaryService;
 import megatera.makaoGymbackEnd.services.ExerciseService;
+import megatera.makaoGymbackEnd.services.NotificationService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
