@@ -18,20 +18,22 @@ public class OrderService {
     private final TicketService ticketService;
     private final PtTicketService ptTicketService;
     private final KakaoPayService kakaopayService;
+    private final NotificationService notificationService;
 
     public OrderService(OrderRepository orderRepository,
                         ProductService productService,
                         OptionService optionService,
                         TicketService ticketService,
                         PtTicketService ptTicketService,
-                        KakaoPayService kakaopayService
-    ) {
+                        KakaoPayService kakaopayService,
+                        NotificationService notificationService) {
         this.orderRepository = orderRepository;
         this.productService = productService;
         this.optionService = optionService;
         this.ticketService = ticketService;
         this.ptTicketService = ptTicketService;
         this.kakaopayService = kakaopayService;
+        this.notificationService = notificationService;
     }
 
     public List<OrderResultDto> list(Long userId) {
@@ -95,6 +97,8 @@ public class OrderService {
         orderRepository.save(order);
 
         ticketService.create(userId, productDetailDto.getTrainerId(), productDetailDto.getId(), order.id(), optionResultDto.getDateOfUse(), optionResultDto.getPtTimes(), productDetailDto.getType());
+
+        notificationService.sendNotification(userId, "상품을 구입하셨습니다. 확인해 보세요!", productDetailDto.getType()+"Order");
 
         if (type.equals("Test")) {
             return "https://oh-gym.fly.dev/orders/success";

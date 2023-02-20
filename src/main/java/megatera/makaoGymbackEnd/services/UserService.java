@@ -53,7 +53,13 @@ public class UserService {
     }
 
     public UserDto testUserCreate() {
-        User user = new User(new UserName("테스트용"), "테스트용 이메일", new Count(0L), new Period(0L));
+        List<User> users = userRepository.findAll();
+
+        String name = "테스트용" + users.size();
+
+        String email = "테스트용 이메일" + users.size();
+
+        User user = new User(new UserName(name), email, new Count(0L), new Period(0L));
 
         user.created();
 

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Transactional
 @Service
@@ -37,15 +38,16 @@ public class LockersService {
 
     public LockerDto patch(Long lockerId, Long userId, String type) {
         Locker locker = lockerRepository.getReferenceById(lockerId);
+        Optional<Locker> optionalLocker = lockerRepository.findByUserId(userId);
 
-        if (type.equals("reserve")) {
+        if (type.equals("reserve") || optionalLocker.isEmpty()) {
             locker.reserved();
             locker.setUserId(userId);
         }
 
         if (type.equals("cancel")) {
             locker.inAvailable();
-            locker.setUserId(null);
+            locker.deleteUserId();
         }
 
         return locker.toDto();
