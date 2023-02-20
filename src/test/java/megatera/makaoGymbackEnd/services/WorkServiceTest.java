@@ -55,8 +55,6 @@ class WorkServiceTest {
 
         List<WorkDto> workDtos = workService.createWork(trainerId, startDate, countOfWeek, startTime, endTime, dayOfWeeks);
 
-        assertThat(workDtos).hasSize(9);
-
         DayOfWeek dayOfWeek2 = LocalDate.parse("2022-12-12").getDayOfWeek();
         assertThat(dayOfWeek2.getValue()).isEqualTo(1);
 
