@@ -10,7 +10,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 @RestController
@@ -54,14 +53,14 @@ public class MessageController {
         List<ChattingRoomDetailDto> chattingRoomDetailDtos = new ArrayList<>();
 
         for (ChattingRoomDto chattingRoomDto : chattingRoomDtos) {
-            Long count = chatMessageService.countUnChecked(chattingRoomDto.getId(), chattingRoomDto.getUserName());
+            Long count = chatMessageService.countUnChecked(chattingRoomDto.getId(), userId);
             chattingRoomDetailDtos.add(new ChattingRoomDetailDto(chattingRoomDto, count));
         }
 
         template.convertAndSend("/sub/user/chattingRooms", chattingRoomDetailDtos);
     }
 
-    @MessageMapping("/trainer/chat/enter")
+    @MessageMapping("/trainer/chatList/enter")
     public void trainerEnter(
             TrainerChattingRoomFindDto trainerChattingRoomFindDto
     ) {
@@ -69,28 +68,81 @@ public class MessageController {
 
         List<ChattingRoomDto> chattingRoomDtos = chattingRoomService.fetchByTrainerId(trainerId);
 
-        template.convertAndSend("/sub/trainer/" + trainerId + "/chattingRooms", chattingRoomDtos);
+        List<ChattingRoomDetailDto> chattingRoomDetailDtos = new ArrayList<>();
+
+        for (ChattingRoomDto chattingRoomDto : chattingRoomDtos) {
+            Long count = chatMessageService.countUnChecked(chattingRoomDto.getId(), trainerId);
+            chattingRoomDetailDtos.add(new ChattingRoomDetailDto(chattingRoomDto, count));
+        }
+
+        template.convertAndSend("/sub/trainer/" + trainerId + "/chattingRooms", chattingRoomDetailDtos);
     }
 
-    @MessageMapping("/chat/messages")
+    @MessageMapping("/user/chat/messages")
+    public void messageList(
+            ChattingRoomFindDto chattingRoomFindDto,
+            SimpMessageHeaderAccessor headerAccessor
+    ) {
+        Long roomId = chattingRoomFindDto.getRoomId();
+
+        String headers = headerAccessor.getMessageHeaders().get("nativeHeaders").toString();
+
+        String accessToken = headers.substring(
+                "Authorization=[Bearer  ".length(), headers.indexOf("]"));
+
+        Long userId = jwtUtil.decode(accessToken);
+
+        List<ChatMessageDto> chatMessageDtos = chatMessageService.fetchTrainerChats(roomId, userId);
+
+        template.convertAndSend("/sub/chats/room/" + roomId, chatMessageDtos);
+    }
+
+    @MessageMapping("/trainer/chat/messages")
     public void messageList(
             ChattingRoomFindDto chattingRoomFindDto
     ) {
         Long roomId = chattingRoomFindDto.getRoomId();
 
-        List<ChatMessageDto> chatMessageDtos = chatMessageService.fetchChats(roomId);
+        Long trainerId = chattingRoomFindDto.getTrainerId();
+
+        List<ChatMessageDto> chatMessageDtos = chatMessageService.fetchTrainerChats(roomId, trainerId);
 
         template.convertAndSend("/sub/chats/room/" + roomId, chatMessageDtos);
     }
 
-    @MessageMapping("/chat/message")
+    @MessageMapping("/user/chat/message")
+    public void message(
+            ChatMessageRegisterDto chatMessageRegisterDto,
+            SimpMessageHeaderAccessor headerAccessor
+    ) {
+        String headers = headerAccessor.getMessageHeaders().get("nativeHeaders").toString();
+
+        String accessToken = headers.substring(
+                "Authorization=[Bearer  ".length(), headers.indexOf("]"));
+
+        Long userId = jwtUtil.decode(accessToken);
+
+        ChatMessageDto chatMessageDto = chatMessageService.save(
+                chatMessageRegisterDto.getMessage(),
+                chatMessageRegisterDto.getRoomId(),
+                chatMessageRegisterDto.getWriter(),
+                userId
+        );
+
+        chattingRoomService.update(chatMessageRegisterDto.getRoomId(), chatMessageRegisterDto.getMessage());
+
+        template.convertAndSend("/sub/chat/room/" + chatMessageDto.getRoomId(), chatMessageDto);
+    }
+
+    @MessageMapping("/trainer/chat/message")
     public void message(
             ChatMessageRegisterDto chatMessageRegisterDto
     ) {
         ChatMessageDto chatMessageDto = chatMessageService.save(
                 chatMessageRegisterDto.getMessage(),
                 chatMessageRegisterDto.getRoomId(),
-                chatMessageRegisterDto.getWriter()
+                chatMessageRegisterDto.getWriter(),
+                chatMessageRegisterDto.getTrainerId()
         );
 
         chattingRoomService.update(chatMessageRegisterDto.getRoomId(), chatMessageRegisterDto.getMessage());
@@ -105,5 +157,6 @@ public class MessageController {
         ChattingRoomDto chattingRoomDto = chattingRoomService.findById(chatMessageRegisterDto.getRoomId());
 
         template.convertAndSend("/sub/user/" + chattingRoomDto.getUserEmail(), "ㅎㅇ");
+        template.convertAndSend("/sub/trainer/" + chattingRoomDto.getTrainerId(), "ㅎㅇ");
     }
 }

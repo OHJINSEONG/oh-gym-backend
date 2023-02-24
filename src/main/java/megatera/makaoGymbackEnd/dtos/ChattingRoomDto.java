@@ -11,6 +11,7 @@ public class ChattingRoomDto {
     private LocalDateTime updateTime;
     private String trainerImage;
     private String message;
+    private Long trainerId;
 
     public ChattingRoomDto() {
     }
@@ -23,7 +24,8 @@ public class ChattingRoomDto {
             String trainerName,
             LocalDateTime updateTime,
             String message,
-            String trainerImage
+            String trainerImage,
+            Long trainerId
     ) {
         this.id = id;
         this.status = status;
@@ -33,6 +35,7 @@ public class ChattingRoomDto {
         this.updateTime = updateTime;
         this.trainerImage = trainerImage;
         this.message = message;
+        this.trainerId = trainerId;
     }
 
     public Long getId() {
@@ -65,5 +68,9 @@ public class ChattingRoomDto {
 
     public String getTrainerImage() {
         return trainerImage;
+    }
+
+    public Long getTrainerId() {
+        return trainerId;
     }
 }
