@@ -1,9 +1,6 @@
 package megatera.makaoGymbackEnd.services;
 
-import megatera.makaoGymbackEnd.dtos.DiaryResultDto;
-import megatera.makaoGymbackEnd.dtos.TrainerManagementDto;
-import megatera.makaoGymbackEnd.dtos.TrainerResultDto;
-import megatera.makaoGymbackEnd.dtos.UserDto;
+import megatera.makaoGymbackEnd.dtos.*;
 import megatera.makaoGymbackEnd.models.*;
 import megatera.makaoGymbackEnd.repositories.TrainerRepository;
 import org.springframework.stereotype.Service;
@@ -20,12 +17,22 @@ public class AdminTrainerService {
     private final TrainerRepository trainerRepository;
     private final UserService userService;
     private final DiaryService diaryService;
+    private final ChattingRoomService chattingRoomService;
+    private final RequestService requestService;
 
-    public AdminTrainerService(PtTicketService ptTicketService, TrainerRepository trainerRepository, UserService userService, DiaryService diaryService) {
+    public AdminTrainerService(
+            PtTicketService ptTicketService,
+            TrainerRepository trainerRepository,
+            UserService userService,
+            DiaryService diaryService,
+            ChattingRoomService chattingRoomService,
+            RequestService requestService) {
         this.ptTicketService = ptTicketService;
         this.trainerRepository = trainerRepository;
         this.userService = userService;
         this.diaryService = diaryService;
+        this.chattingRoomService = chattingRoomService;
+        this.requestService = requestService;
     }
 
     public List<TrainerManagementDto> management(Long trainerId) {
@@ -59,5 +66,21 @@ public class AdminTrainerService {
         trainerRepository.save(trainer);
 
         return trainer.toDto();
+    }
+
+    public List<TrainerDetailDto> list() {
+        List<Trainer> trainers = trainerRepository.findAll();
+
+        List<TrainerDetailDto> trainerDetailDtos = new ArrayList<>();
+
+        for (Trainer trainer : trainers) {
+            TrainerDetailDto trainerDetailDto = new TrainerDetailDto(trainer.toDto());
+            trainerDetailDto.checkChat(chattingRoomService.findUnCheckedWithTrainerId(trainer.id()));
+            trainerDetailDto.checkRequest(requestService.checkFindAllByTrainerId(trainer.id()));
+
+            trainerDetailDtos.add(trainerDetailDto);
+        }
+
+        return trainerDetailDtos;
     }
 }

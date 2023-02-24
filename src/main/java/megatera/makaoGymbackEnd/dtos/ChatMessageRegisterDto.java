@@ -7,13 +7,16 @@ public class ChatMessageRegisterDto {
 
     private String message;
 
+    private Long trainerId;
+
     public ChatMessageRegisterDto() {
     }
 
-    public ChatMessageRegisterDto(Long roomId, String writer, String message) {
+    public ChatMessageRegisterDto(Long roomId, String writer, String message,Long trainerId) {
         this.roomId = roomId;
         this.writer = writer;
         this.message = message;
+        this.trainerId = trainerId;
     }
 
     public Long getRoomId() {
@@ -26,5 +29,9 @@ public class ChatMessageRegisterDto {
 
     public String getMessage() {
         return message;
+    }
+
+    public Long getTrainerId() {
+        return trainerId;
     }
 }

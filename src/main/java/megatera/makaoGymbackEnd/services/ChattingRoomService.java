@@ -20,11 +20,13 @@ import java.util.Optional;
 @Transactional
 public class ChattingRoomService {
     private final ChattingRoomRepository chattingRoomRepository;
+    private final ChatMessageService chatMessageService;
     private final UserRepository userRepository;
     private final TrainerRepository trainerRepository;
 
-    public ChattingRoomService(ChattingRoomRepository chattingRoomRepository, UserRepository userRepository, TrainerRepository trainerRepository) {
+    public ChattingRoomService(ChattingRoomRepository chattingRoomRepository, ChatMessageService chatMessageService, UserRepository userRepository, TrainerRepository trainerRepository) {
         this.chattingRoomRepository = chattingRoomRepository;
+        this.chatMessageService = chatMessageService;
         this.userRepository = userRepository;
         this.trainerRepository = trainerRepository;
     }
@@ -82,5 +84,15 @@ public class ChattingRoomService {
 
     public ChattingRoomDto findById(Long roomId) {
         return chattingRoomRepository.getReferenceById(roomId).toDto();
+    }
+
+    public boolean findUnCheckedWithTrainerId(Long trainerId) {
+        List<ChattingRoom> chattingRooms = chattingRoomRepository.findAllByTrainerId(trainerId);
+        for (ChattingRoom chattingRoom : chattingRooms) {
+            if (chatMessageService.countUnChecked(chattingRoom.id(), trainerId) != 0L) {
+                return true;
+            }
+        }
+        return false;
     }
 }

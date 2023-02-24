@@ -59,7 +59,7 @@ public class ChattingRoom {
         String trainerImage = "image";
         String userEmail = "email";
 
-        ChattingRoom chattingRoom = new ChattingRoom(userId,trainerId,userName,trainerName,trainerImage,userEmail);
+        ChattingRoom chattingRoom = new ChattingRoom(userId, trainerId, userName, trainerName, trainerImage, userEmail);
 
         chattingRoom.updateTime(LocalDateTime.now());
 
@@ -80,7 +80,7 @@ public class ChattingRoom {
     }
 
     public ChattingRoomDto toDto() {
-        return new ChattingRoomDto(id, status.value(), userName.value(), userEmail, trainerName.value(), updatedAt, message, trainerImage);
+        return new ChattingRoomDto(id, status.value(), userName.value(), userEmail, trainerName.value(), updatedAt, message, trainerImage, trainerId);
     }
 
     public Long trainerId() {

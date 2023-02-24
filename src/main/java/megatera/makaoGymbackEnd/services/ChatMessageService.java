@@ -20,8 +20,8 @@ public class ChatMessageService {
         this.chatRepository = chatRepository;
     }
 
-    public ChatMessageDto save(String message, Long roomId, String writer) {
-        Chat chat = new Chat(roomId, new UserName(writer), new Message(message));
+    public ChatMessageDto save(String message, Long roomId, String writer, Long writerId) {
+        Chat chat = new Chat(roomId, writerId, new UserName(writer), new Message(message));
 
         chat.created();
 
@@ -40,8 +40,16 @@ public class ChatMessageService {
         return chats.stream().map(Chat::toDto).toList();
     }
 
-    public Long countUnChecked(Long roomId, String userName) {
-        return (long) chatRepository.findAllByRoomId(roomId).stream().filter(chat -> chat.other(userName)
+    public Long countUnChecked(Long roomId, Long writerId) {
+        return (long) chatRepository.findAllByRoomId(roomId).stream().filter(chat -> chat.other(writerId)
                 && !chat.status().equals("CHECKED")).toList().size();
+    }
+
+    public List<ChatMessageDto> fetchTrainerChats(Long roomId, Long writerId) {
+        List<Chat> chats = chatRepository.findAllByRoomId(roomId);
+
+        chats.stream().filter(chat -> chat.other(writerId)).forEach(Chat::checked);
+
+        return chats.stream().map(Chat::toDto).toList();
     }
 }
