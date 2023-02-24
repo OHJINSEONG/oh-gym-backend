@@ -30,8 +30,9 @@ class ChatMessageServiceTest {
         String message = "안녕";
         Long roomId = 1L;
         String writer = "오진성";
+        Long userId = 1L;
 
-        ChatMessageDto chatMessageDto = chatMessageService.save(message,roomId,writer);
+        ChatMessageDto chatMessageDto = chatMessageService.save(message, roomId, writer, userId);
 
         assertThat(chatMessageDto.getMessage()).isEqualTo("안녕");
     }
@@ -52,14 +53,14 @@ class ChatMessageServiceTest {
     @Test
     void countUnChecked() {
         Long roomId = 1L;
-        String userName = "오진성";
+        Long userId = 1L;
 
         given(chatRepository.findAllByRoomId(any())).willReturn(List.of(
                 Chat.fake(new UserName("오진성")),
                 Chat.fake(new UserName("오진욱")),
                 Chat.fake(new UserName("오진욱"))
         ));
-        Long countUnChecked = chatMessageService.countUnChecked(roomId,userName);
+        Long countUnChecked = chatMessageService.countUnChecked(roomId, userId);
 
         assertThat(countUnChecked).isEqualTo(2L);
     }

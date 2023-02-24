@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -48,5 +49,12 @@ public class RequestService {
 
     public void delete(Long id) {
         requestRepository.deleteById(id);
+    }
+
+    public Boolean checkFindAllByTrainerId(Long trainerId) {
+        Optional<Request> optionalRequest = requestRepository.findAllByReceiverId(trainerId).stream()
+                .filter(request -> !request.status().equals("CHECKED")).findAny();
+
+        return optionalRequest.isPresent();
     }
 }

@@ -1,5 +1,6 @@
 package megatera.makaoGymbackEnd.admin.controllers;
 
+import megatera.makaoGymbackEnd.dtos.TrainerDetailDto;
 import megatera.makaoGymbackEnd.dtos.TrainerManagementDto;
 import megatera.makaoGymbackEnd.dtos.TrainerRegisterDto;
 import megatera.makaoGymbackEnd.dtos.TrainerResultDto;
@@ -20,8 +21,14 @@ public class AdminTrainerController {
         this.adminTrainerService = adminTrainerService;
     }
 
+    @GetMapping
+    public List<TrainerDetailDto> list(
+    ) {
+        return adminTrainerService.list();
+    }
+
     @GetMapping("{trainerId}/use-ticket-users")
-    public List<TrainerManagementDto> list(
+    public List<TrainerManagementDto> trainerMemberList(
             @PathVariable Long trainerId
     ) {
         return adminTrainerService.management(trainerId);
