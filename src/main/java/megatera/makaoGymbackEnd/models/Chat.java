@@ -6,6 +6,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 public class Chat {
@@ -14,6 +15,8 @@ public class Chat {
     private Long id;
 
     private Long roomId;
+
+    private Long writerId;
 
     @Embedded
     @AttributeOverride(name = "value", column = @Column(name = "writer"))
@@ -34,14 +37,15 @@ public class Chat {
     public Chat() {
     }
 
-    public Chat(Long roomId, UserName writer, Message message) {
+    public Chat(Long roomId, Long writerId, UserName writer, Message message) {
         this.roomId = roomId;
+        this.writerId = writerId;
         this.writer = writer;
         this.message = message;
     }
 
     public static Chat fake(UserName username) {
-        Chat chat = new Chat(1L, username, new Message("하이입니다."));
+        Chat chat = new Chat(1L, 1L, username, new Message("하이입니다."));
 
         chat.created();
 
@@ -68,7 +72,7 @@ public class Chat {
         return this.status.value();
     }
 
-    public boolean other(String userName) {
-        return !writer.value().equals(userName);
+    public boolean other(Long writerId) {
+        return !Objects.equals(this.writerId, writerId);
     }
 }

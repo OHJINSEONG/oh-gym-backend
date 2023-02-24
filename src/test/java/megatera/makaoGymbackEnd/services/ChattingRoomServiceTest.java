@@ -22,6 +22,8 @@ import static org.mockito.Mockito.mock;
 class ChattingRoomServiceTest {
     private ChattingRoomService chattingRoomService;
 
+    private ChatMessageService chatMessageService;
+
     private ChattingRoomRepository chattingRoomRepository;
 
     private UserRepository userRepository;
@@ -31,9 +33,10 @@ class ChattingRoomServiceTest {
     @BeforeEach
     void setup() {
         userRepository = mock(UserRepository.class);
+        chatMessageService = mock(ChatMessageService.class);
         trainerRepository = mock(TrainerRepository.class);
         chattingRoomRepository = mock(ChattingRoomRepository.class);
-        chattingRoomService = new ChattingRoomService(chattingRoomRepository, userRepository, trainerRepository);
+        chattingRoomService = new ChattingRoomService(chattingRoomRepository, chatMessageService, userRepository, trainerRepository);
     }
 
     @Test
