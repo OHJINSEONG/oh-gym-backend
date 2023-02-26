@@ -1,16 +1,14 @@
 package megatera.makaoGymbackEnd.services;
 
-import megatera.makaoGymbackEnd.dtos.*;
-import megatera.makaoGymbackEnd.models.Category;
-import megatera.makaoGymbackEnd.models.Exercise;
-import megatera.makaoGymbackEnd.models.Name;
-import megatera.makaoGymbackEnd.models.Set;
+import megatera.makaoGymbackEnd.dtos.ExerciseDto;
+import megatera.makaoGymbackEnd.dtos.ExerciseResultDto;
+import megatera.makaoGymbackEnd.models.*;
 import megatera.makaoGymbackEnd.repositories.ExerciseRepository;
 import megatera.makaoGymbackEnd.repositories.SetRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -31,6 +29,16 @@ public class ExerciseService {
 
         exerciseRepository.save(exercise);
 
+        for (int i = 0; i < 3; i += 1) {
+            Long setNumber = (long) (i + 1);
+
+            Set set = new Set(exercise.id(), new Weight(40L), 12L, setNumber);
+
+            set.created();
+
+            setRepository.save(set);
+        }
+
         return exercise.toDto();
     }
 
@@ -39,7 +47,9 @@ public class ExerciseService {
 
         List<Set> sets = setRepository.findAll();
 
-        return exercises.stream().map(exercise -> exercise.toResultDto(sets)).toList();
+        return exercises.stream()
+                .sorted(Comparator.comparing(Exercise::createAt))
+                .map(exercise -> exercise.toResultDto(sets)).toList();
     }
 
     public ExerciseResultDto find(Long exerciseId) {
@@ -63,7 +73,7 @@ public class ExerciseService {
     public void delete(Long exerciseId) {
         List<Set> sets = setRepository.findAllByExerciseId(exerciseId);
 
-        for(Set set : sets){
+        for (Set set : sets) {
             setRepository.delete(set);
         }
 

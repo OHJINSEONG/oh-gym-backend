@@ -92,4 +92,8 @@ public class Exercise {
 
         return new ExerciseResultDto(toDto(), setResultDtos);
     }
+
+    public LocalDateTime createAt() {
+        return createdAt;
+    }
 }
