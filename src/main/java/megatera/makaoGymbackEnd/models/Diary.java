@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 @Entity
@@ -98,7 +99,9 @@ public class Diary {
 
     public DiaryResultDto toResultDto(List<Exercise> exercises, List<Set> sets) {
         List<ExerciseResultDto> exerciseResultDtos = exercises.stream()
-                .filter(exercise -> exercise.diaryId().equals(id)).map(exercise -> exercise.toResultDto(sets)).toList();
+                .sorted(Comparator.comparing(Exercise::createAt))
+                .filter(exercise -> exercise.diaryId().equals(id))
+                .map(exercise -> exercise.toResultDto(sets)).toList();
 
         return new DiaryResultDto(toDto(), exerciseResultDtos);
     }

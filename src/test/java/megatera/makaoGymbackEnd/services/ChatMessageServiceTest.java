@@ -53,7 +53,7 @@ class ChatMessageServiceTest {
     @Test
     void countUnChecked() {
         Long roomId = 1L;
-        Long userId = 1L;
+        Long userId = 2L;
 
         given(chatRepository.findAllByRoomId(any())).willReturn(List.of(
                 Chat.fake(new UserName("오진성")),
@@ -62,6 +62,6 @@ class ChatMessageServiceTest {
         ));
         Long countUnChecked = chatMessageService.countUnChecked(roomId, userId);
 
-        assertThat(countUnChecked).isEqualTo(2L);
+        assertThat(countUnChecked).isEqualTo(3L);
     }
 }

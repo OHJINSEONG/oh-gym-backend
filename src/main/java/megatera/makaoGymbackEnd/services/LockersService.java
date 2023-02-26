@@ -40,7 +40,7 @@ public class LockersService {
         Locker locker = lockerRepository.getReferenceById(lockerId);
         Optional<Locker> optionalLocker = lockerRepository.findByUserId(userId);
 
-        if (type.equals("reserve") || optionalLocker.isEmpty()) {
+        if (type.equals("reserve") && optionalLocker.isEmpty()) {
             locker.reserved();
             locker.setUserId(userId);
         }
