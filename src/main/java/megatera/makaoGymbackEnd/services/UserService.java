@@ -1,5 +1,6 @@
 package megatera.makaoGymbackEnd.services;
 
+import megatera.makaoGymbackEnd.dtos.ProductDetailDto;
 import megatera.makaoGymbackEnd.dtos.UserDto;
 import megatera.makaoGymbackEnd.models.Count;
 import megatera.makaoGymbackEnd.models.Period;
@@ -18,10 +19,16 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final KakaoService kakaoService;
+    private final ProductService productService;
+    private final OrderService orderService;
+    private final PtTicketService ptTicketService;
 
-    public UserService(UserRepository userRepository, KakaoService kakaoService) {
+    public UserService(UserRepository userRepository, KakaoService kakaoService, ProductService productService, OrderService orderService, PtTicketService ptTicketService) {
         this.userRepository = userRepository;
         this.kakaoService = kakaoService;
+        this.productService = productService;
+        this.orderService = orderService;
+        this.ptTicketService = ptTicketService;
     }
 
     public Optional<UserDto> findByEmail(String email) {
@@ -64,6 +71,25 @@ public class UserService {
         user.created();
 
         userRepository.save(user);
+
+        Optional<ProductDetailDto> ptProductDetailDto = productService.list().stream()
+                .filter(productDetailDto -> productDetailDto.getType().equals("PT")).findFirst();
+
+        ptProductDetailDto.ifPresent(productDetailDto ->
+                orderService.create(
+                        user.toDto().getId(),
+                        productDetailDto.getId(),
+                        productDetailDto.getOptions().get(0).getId(),
+                        "피티",
+                        productDetailDto.getOptions().get(0).getPrice(),
+                        "주소",
+                        "남자",
+                        "상세 주소",
+                        "생일",
+                        "전화 번호",
+                        user.userName().value(),
+                        "Test"
+                ));
 
         return user.toDto();
     }

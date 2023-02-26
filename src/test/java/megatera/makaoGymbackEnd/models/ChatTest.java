@@ -19,6 +19,6 @@ class ChatTest {
     void other(){
         Chat chat = Chat.fake(new UserName("오진성"));
 
-        assertThat(chat.other("오진욱")).isTrue();
+        assertThat(chat.other(2L)).isTrue();
     }
 }

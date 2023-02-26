@@ -27,7 +27,7 @@ class UserServiceTest {
     void setup() {
         userRepository = mock(UserRepository.class);
         kakaoService = mock(KakaoService.class);
-        userService = new UserService(userRepository, kakaoService);
+        userService = new UserService(userRepository, kakaoService, productService, orderService, ptTicketService);
     }
 
     @Test
