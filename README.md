@@ -29,7 +29,7 @@ OhGym은 간단하게 PT,락커 신청을 할수있고 운동일지를 쉽게 �
 <br>
 
 ## 아키텍쳐
-Flux Architecture를 참고했습니다.
+Layered Architecture를 참고했습니다.
 
 1. UI Layer
 2. Application Layer
