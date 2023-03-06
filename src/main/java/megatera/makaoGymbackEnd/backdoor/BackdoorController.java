@@ -26,6 +26,7 @@ public class BackdoorController {
     public String setupDatabase() {
         LocalDateTime now = LocalDateTime.now();
 
+        jdbcTemplate.execute("DELETE FROM notification");
         jdbcTemplate.execute("DELETE FROM chat");
         jdbcTemplate.execute("DELETE FROM chatting_room");
         jdbcTemplate.execute("DELETE FROM pt_ticket");
@@ -320,6 +321,29 @@ public class BackdoorController {
             );
         }
         return "OK";
+    }
+
+    @GetMapping("delete-all")
+    public String deleteAll() {
+        jdbcTemplate.execute("DELETE FROM chat");
+        jdbcTemplate.execute("DELETE FROM chatting_room");
+        jdbcTemplate.execute("DELETE FROM pt_ticket");
+        jdbcTemplate.execute("DELETE FROM locker_ticket");
+        jdbcTemplate.execute("DELETE FROM locker");
+        jdbcTemplate.execute("DELETE FROM exercise_set");
+        jdbcTemplate.execute("DELETE FROM exercise");
+        jdbcTemplate.execute("DELETE FROM diary");
+        jdbcTemplate.execute("DELETE FROM work");
+        jdbcTemplate.execute("DELETE FROM request");
+        jdbcTemplate.execute("DELETE FROM trainer");
+        jdbcTemplate.execute("DELETE FROM person");
+        jdbcTemplate.execute("DELETE FROM option");
+        jdbcTemplate.execute("DELETE FROM product");
+        jdbcTemplate.execute("DELETE FROM orders");
+        jdbcTemplate.execute("DELETE FROM lecture");
+        jdbcTemplate.execute("DELETE FROM notification");
+
+        return "Delete All";
     }
 
     @GetMapping("delete-products")

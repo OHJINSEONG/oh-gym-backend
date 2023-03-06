@@ -1,7 +1,9 @@
-FROM eclipse-temurin:18
+FROM openjdk:17
 
-WORKDIR /u/myapp
+ARG JAR_FILE=build/libs/*[^plain].jar
 
-COPY build/libs/*[^plain].jar ./
+COPY ${JAR_FILE} app.jar
 
-CMD java -Dserver.port=8000 -Dspring.profiles.active=production -jar *.jar
+# COPY build/libs/app.jar app.jar
+
+ENTRYPOINT ["java", "-Dspring.profiles.active=production", "-jar", "./app.jar"]

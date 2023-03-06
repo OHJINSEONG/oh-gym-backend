@@ -1,7 +1,6 @@
 package megatera.makaoGymbackEnd;
 
 import megatera.makaoGymbackEnd.interceptors.AuthenticationInterceptor;
-import megatera.makaoGymbackEnd.services.KakaoService;
 import megatera.makaoGymbackEnd.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
