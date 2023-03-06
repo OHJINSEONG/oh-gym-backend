@@ -32,7 +32,7 @@ public class KakaoService {
             StringBuilder sb = new StringBuilder();
             sb.append("grant_type=authorization_code");
             sb.append("&client_id=f99c39ffcdf63597195c1d3678b78fde");
-            sb.append("&redirect_uri=https://oh-gym.fly.dev/auth/kakao/callback");
+            sb.append("&redirect_uri=https://ooh-gym.fly.dev/auth/kakao/callback");
             sb.append("&code=" + code);
             bw.write(sb.toString());
             bw.flush();
