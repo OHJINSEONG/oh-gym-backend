@@ -1,0 +1,23 @@
+name: Fly.io CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Set up Fly CLI
+      uses: superfly/flyctl-actions@v0.1.1
+      with:
+        flyctl_version: latest
+    - name: Login to Fly.io
+      run: flyctl auth login --access-token ${{ secrets.FLY_API_TOKEN }}
+    - name: Build and deploy app
+      run: |
+        flyctl deploy
+        
