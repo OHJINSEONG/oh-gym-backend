@@ -4,8 +4,9 @@
 OhGym은 간단하게 PT,락커 신청을 할수있고 운동일지를 쉽게 관리 할 수 있는 개인 프랜차이징 헬스장 관리 서비스입니다.
 
 ### 배포 URL
-- 사용자 : [https://oh-gym.fly.dev/](https://oh-gym.fly.dev/)
-- 어드민 : [https://oh-gym-admin.fly.dev/](https://oh-gym-admin.fly.dev/)
+- 사용자 : [https://ooh-gym.fly.dev/](https://ooh-gym.fly.dev/)
+- 어드민 : [https://ooh-gym-admin.fly.dev/](https://ooh-gym-admin.fly.dev/)
+- 서버 : [https://oh-mall.shop:8000/](https://oh-mall.shop:8000/)
 
 ### Github
 - 서버 : [https://github.com/OHJINSEONG/oh-gym-backend](https://github.com/OHJINSEONG/oh-gym-backend)
