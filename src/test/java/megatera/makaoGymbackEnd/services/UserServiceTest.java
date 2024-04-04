@@ -18,10 +18,12 @@ import static org.mockito.Mockito.mock;
 
 class UserServiceTest {
     private UserRepository userRepository;
-
     private UserService userService;
-
     private KakaoService kakaoService;
+    private ProductService productService;
+    private OrderService orderService;
+    private PtTicketService ptTicketService;
+
 
     @BeforeEach
     void setup() {

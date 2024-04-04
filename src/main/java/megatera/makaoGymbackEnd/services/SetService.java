@@ -1,14 +1,19 @@
 package megatera.makaoGymbackEnd.services;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
+
 import megatera.makaoGymbackEnd.dtos.SetDto;
-import megatera.makaoGymbackEnd.dtos.SetPatchDto;
 import megatera.makaoGymbackEnd.dtos.SetResultDto;
-import megatera.makaoGymbackEnd.models.Set;
-import megatera.makaoGymbackEnd.models.Weight;
+import megatera.makaoGymbackEnd.exceptions.DeleteError;
+import megatera.makaoGymbackEnd.models.*;
 import megatera.makaoGymbackEnd.repositories.SetRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.PersistenceUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -17,6 +22,10 @@ import java.util.Optional;
 @Service
 public class SetService {
     private final SetRepository setRepository;
+
+    @PersistenceUnit
+    private EntityManagerFactory entityManagerFactory;
+
 
     public SetService(SetRepository setRepository) {
         this.setRepository = setRepository;
@@ -48,7 +57,32 @@ public class SetService {
     }
 
     public void delete(Long setId) {
-        setRepository.deleteById(setId);
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction entityTransaction = entityManager.getTransaction();
+        entityTransaction.begin();
+
+        JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+
+        try {
+            QSet qSet = QSet.set;
+
+            long deletedCount = queryFactory
+                    .delete(qSet)
+                    .where(qSet.id.eq(setId))
+                    .execute();
+
+
+            entityTransaction.commit();
+            entityManager.close();
+
+        } catch (Exception exception) {
+            System.out.println("트랜잭션 에러");
+            System.out.println(exception.getMessage());
+            entityTransaction.rollback();
+            entityManager.close();
+
+            throw new DeleteError(exception.getMessage());
+        }
     }
 
     public SetResultDto complete(Long setId) {

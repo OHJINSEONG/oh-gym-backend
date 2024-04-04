@@ -101,7 +101,7 @@ public class OrderService {
         notificationService.sendNotification(userId, "상품을 구입하셨습니다. 확인해 보세요!", productDetailDto.getType()+"Order");
 
         if (type.equals("Test")) {
-            return "https://oh-gym.fly.dev/orders/success";
+            return "http://localhost:8080/orders/success";
         }
 
         return kakaopayService.kakaoPayReady(itemName, totalPrice).getNext_redirect_pc_url();
