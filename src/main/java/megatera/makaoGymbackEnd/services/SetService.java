@@ -1,12 +1,16 @@
 package megatera.makaoGymbackEnd.services;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-
 import megatera.makaoGymbackEnd.dtos.SetDto;
 import megatera.makaoGymbackEnd.dtos.SetResultDto;
 import megatera.makaoGymbackEnd.exceptions.DeleteError;
-import megatera.makaoGymbackEnd.models.*;
+import megatera.makaoGymbackEnd.manager.RedisCacheManager;
+import megatera.makaoGymbackEnd.models.QSet;
+import megatera.makaoGymbackEnd.models.Set;
+import megatera.makaoGymbackEnd.models.Weight;
 import megatera.makaoGymbackEnd.repositories.SetRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,12 +45,13 @@ public class SetService {
         return set.toDto();
     }
 
+    @Cacheable("sets")
     public List<SetResultDto> list(Long exerciseId) {
         return setRepository.findAllByExerciseId(exerciseId).stream().map(Set::toDto).toList();
     }
 
+    @Cacheable("set-patch")
     public List<SetResultDto> patch(Long exerciseId, List<SetDto> setDtos) {
-
         List<Set> sets = setRepository.findAllByExerciseId(exerciseId);
         for (Set set : sets) {
             Optional<SetDto> find = setDtos.stream().filter(setDto -> Objects.equals(setDto.getId(), set.id())).findFirst();
@@ -85,9 +90,11 @@ public class SetService {
         }
     }
 
+    @Cacheable("set-complete")
     public SetResultDto complete(Long setId) {
         Set set = setRepository.getReferenceById(setId);
         set.complete();
+
         return set.toDto();
     }
 }
