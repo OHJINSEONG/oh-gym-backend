@@ -25,12 +25,12 @@ public class NotificationController {
 //        return notificationService.subscribe(userId, lastEventId);
 //    }
 
-    @GetMapping
-    public List<NotificationDto> list(
-            @RequestAttribute("userId") Long userId
-    ) {
-        return notificationService.list(userId);
-    }
+//    @GetMapping
+//    public List<NotificationDto> list(
+//            @RequestAttribute("userId") Long userId
+//    ) {
+//        return notificationService.list(userId);
+//    }
 
     @PatchMapping("check")
     public List<NotificationDto> check(
