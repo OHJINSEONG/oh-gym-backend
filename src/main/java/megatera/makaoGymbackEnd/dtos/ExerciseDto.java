@@ -1,5 +1,8 @@
 package megatera.makaoGymbackEnd.dtos;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class ExerciseDto {
     private Long id;
 
@@ -9,7 +12,13 @@ public class ExerciseDto {
 
     private String status;
 
-    public ExerciseDto(Long id, String name, String type, String status) {
+    @JsonCreator
+    public ExerciseDto(
+            @JsonProperty("id") Long id,
+            @JsonProperty("name") String name,
+            @JsonProperty("type") String type,
+            @JsonProperty("status") String status
+    ) {
         this.id = id;
         this.name = name;
         this.type = type;

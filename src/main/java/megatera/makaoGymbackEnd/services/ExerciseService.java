@@ -5,6 +5,7 @@ import megatera.makaoGymbackEnd.dtos.ExerciseResultDto;
 import megatera.makaoGymbackEnd.models.*;
 import megatera.makaoGymbackEnd.repositories.ExerciseRepository;
 import megatera.makaoGymbackEnd.repositories.SetRepository;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

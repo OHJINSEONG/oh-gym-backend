@@ -1,12 +1,17 @@
 package megatera.makaoGymbackEnd.dtos;
 
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 public class ExerciseResultDto {
     private List<SetResultDto> sets;
     private ExerciseDto exercise;
 
-    public ExerciseResultDto(ExerciseDto exercise, List<SetResultDto> sets) {
+    @JsonCreator
+    public ExerciseResultDto(@JsonProperty("exercise") ExerciseDto exercise, @JsonProperty("sets") List<SetResultDto> sets) {
         this.exercise = exercise;
         this.sets = sets;
     }

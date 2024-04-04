@@ -1,6 +1,7 @@
 package megatera.makaoGymbackEnd.dtos;
 
-import megatera.makaoGymbackEnd.models.Status;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SetResultDto {
     private Long id;
@@ -9,7 +10,14 @@ public class SetResultDto {
     private Long reps;
     private String status;
 
-    public SetResultDto(Long id, Long weight, Long setNumber, Long reps, String status) {
+    @JsonCreator
+    public SetResultDto(
+            @JsonProperty("id") Long id,
+            @JsonProperty("weight") Long weight,
+            @JsonProperty("setNumber") Long setNumber,
+            @JsonProperty("reps") Long reps,
+            @JsonProperty("status") String status
+    ) {
         this.id = id;
         this.weight = weight;
         this.setNumber = setNumber;
