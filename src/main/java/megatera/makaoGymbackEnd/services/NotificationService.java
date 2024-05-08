@@ -6,6 +6,8 @@ import megatera.makaoGymbackEnd.dtos.NotificationDto;
 import megatera.makaoGymbackEnd.models.Notification;
 import megatera.makaoGymbackEnd.repositories.NotificationRepository;
 import megatera.makaoGymbackEnd.repositories.SseEmitterRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.aws.messaging.core.QueueMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -17,33 +19,23 @@ import java.util.Map;
 @Service
 @Transactional
 public class NotificationService {
-    private final SseEmitterRepository sseEmitterRepository;
+    @Value("${cloud.aws.end-point.uri}")
+    private String sqsEndpoint;
+
+    private final QueueMessagingTemplate queueMessagingTemplate;
     private final NotificationRepository notificationRepository;
+    private final ObjectMapper objectMapper;
 
-    public NotificationService(SseEmitterRepository sseEmitterRepository, NotificationRepository notificationRepository) {
-        this.sseEmitterRepository = sseEmitterRepository;
+    public NotificationService(
+            QueueMessagingTemplate queueMessagingTemplate,
+            NotificationRepository notificationRepository,
+            ObjectMapper objectMapper,
+            SseEmitterRepository sseEmitterRepository
+    ) {
+        this.queueMessagingTemplate = queueMessagingTemplate;
         this.notificationRepository = notificationRepository;
+        this.objectMapper = objectMapper;
     }
-
-//    public SseEmitter subscribe(Long userId, String lastEventId) {
-//        String id = userId + "_" + System.currentTimeMillis();
-//        SseEmitter emitter = sseEmitterRepository.save(id, new SseEmitter(60L * 1000 * 60));
-//
-//        emitter.onCompletion(() -> sseEmitterRepository.deleteById(id));
-//        emitter.onTimeout(() -> sseEmitterRepository.deleteById(id));
-//
-//        try {
-//            emitter.send(SseEmitter.event()
-//                    .id(id)
-//                    .name("sse")
-//                    .data("EventStream Created. [userId=" + userId + "]"));
-//        } catch (IOException exception) {
-//            sseEmitterRepository.deleteById(id);
-//            throw new RuntimeException(exception.getMessage());
-//        }
-//
-//        return emitter;
-//    }
 
     public void sendNotification(Long userId, String content, String type) {
         Notification notification = new Notification(userId, content, type);
@@ -51,31 +43,11 @@ public class NotificationService {
         notification.setTime();
         notificationRepository.save(notification);
 
-//        Map<String, SseEmitter> sseEmitters = sseEmitterRepository.findUserWithById(String.valueOf(userId));
-//
-//        ObjectMapper objectMapper = new ObjectMapper();
-//
-//        sseEmitters.forEach(
-//                (key, emitter) -> {
-//                    try {
-//                        sendToClient(emitter, key, objectMapper.writeValueAsString(notification.toDto()),notification.id());
-//                    } catch (JsonProcessingException e) {
-//                        throw new RuntimeException(e);
-//                    }
-//                }
-//        );
-    }
-
-    private void sendToClient(SseEmitter emitter, String id, Object data,Long notificationId) {
         try {
-            emitter.send(SseEmitter.event()
-                    .id(id)
-                    .name("sse")
-                    .data(data));
-        } catch (IOException exception) {
-            notificationRepository.deleteById(notificationId);
-            sseEmitterRepository.deleteById(id);
-            throw new RuntimeException(exception.getMessage());
+            String jsonNotification = objectMapper.writeValueAsString(notification.toDto());
+            queueMessagingTemplate.convertAndSend(this.sqsEndpoint, jsonNotification);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
     }
 

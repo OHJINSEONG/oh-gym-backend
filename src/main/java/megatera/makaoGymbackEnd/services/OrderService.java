@@ -26,7 +26,8 @@ public class OrderService {
                         TicketService ticketService,
                         PtTicketService ptTicketService,
                         KakaoPayService kakaopayService,
-                        NotificationService notificationService) {
+                        NotificationService notificationService
+    ) {
         this.orderRepository = orderRepository;
         this.productService = productService;
         this.optionService = optionService;

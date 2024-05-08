@@ -16,8 +16,8 @@ import java.util.HashMap;
 @Transactional
 @Service
 public class KakaoService {
-    public String getAccessToken(String code) {
-        String accessToken = "";
+    public HashMap<String, String> getAccessToken(String code) {
+        HashMap<String, String> tokenInfo = new HashMap<>();
 
         String reqURL = "https://kauth.kakao.com/oauth/token";
 
@@ -32,13 +32,19 @@ public class KakaoService {
             StringBuilder sb = new StringBuilder();
             sb.append("grant_type=authorization_code");
             sb.append("&client_id=f99c39ffcdf63597195c1d3678b78fde");
-            sb.append("&redirect_uri=https://ooh-gym.fly.dev/auth/kakao/callback");
+
+            String redirectUri = "http://localhost:8080/auth/kakao/callback";
+            if (System.getenv("ENVIRONMENT") != null && System.getenv("ENVIRONMENT").equals("PRODUCTION")) {
+                redirectUri = "https://ooh-gym.fly.dev/auth/kakao/callback";
+            }
+
+            sb.append("&redirect_uri=" + redirectUri);
             sb.append("&code=" + code);
             bw.write(sb.toString());
             bw.flush();
 
             int responseCode = conn.getResponseCode();
-            System.out.println(""+responseCode);
+            System.out.println("" + responseCode);
             System.out.println("responseCode : " + responseCode);
 
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -52,7 +58,17 @@ public class KakaoService {
 
             JsonElement element = JsonParser.parseString(result);
 
-            accessToken = element.getAsJsonObject().get("access_token").getAsString();
+            String accessToken = element.getAsJsonObject().get("access_token").getAsString();
+            String refreshToken = element.getAsJsonObject().get("refresh_token").getAsString();
+            long expiresIn = element.getAsJsonObject().get("expires_in").getAsLong();
+
+            tokenInfo.put("accessToken", accessToken);
+            tokenInfo.put("refreshToken", refreshToken);
+            tokenInfo.put("expiresIn", String.valueOf(expiresIn));
+
+            System.out.println("Access Token: " + tokenInfo.get("accessToken"));
+            System.out.println("Refresh Token: " + refreshToken);
+            System.out.println("Expires In: " + expiresIn);
 
             System.out.println("accessToken : " + accessToken);
 
@@ -62,7 +78,7 @@ public class KakaoService {
             e.printStackTrace();
         }
 
-        return accessToken;
+        return tokenInfo;
     }
 
     public HashMap<String, String> getUser(String kakaoAccessToken) {
@@ -99,7 +115,7 @@ public class KakaoService {
 
             System.out.println(email);
 
-            if(email == null){
+            if (email == null) {
                 throw new InValidEmail();
             }
 

@@ -8,6 +8,7 @@ import megatera.makaoGymbackEnd.models.UserName;
 import megatera.makaoGymbackEnd.repositories.ChattingRoomRepository;
 import megatera.makaoGymbackEnd.repositories.TrainerRepository;
 import megatera.makaoGymbackEnd.repositories.UserRepository;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

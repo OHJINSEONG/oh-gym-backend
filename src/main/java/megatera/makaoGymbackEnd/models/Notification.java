@@ -88,4 +88,28 @@ public class Notification {
     public void toChecked() {
         this.status.toChecked();
     }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public Long getId() {
+        return id;
+    }
 }
