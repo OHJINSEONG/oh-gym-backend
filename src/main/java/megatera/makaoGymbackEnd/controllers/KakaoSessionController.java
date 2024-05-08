@@ -30,15 +30,15 @@ public class KakaoSessionController {
     public LoginResultDto login(
             @RequestParam("code") String code
     ) {
-        String kakaoAccessToken = kakaoService.getAccessToken(code);
+        HashMap<String, String> kakaoAccessToken = kakaoService.getAccessToken(code);
 
-        HashMap<String, String> userInformation = kakaoService.getUser(kakaoAccessToken);
+        HashMap<String, String> userInformation = kakaoService.getUser(kakaoAccessToken.get("accessToken"));
 
         Optional<UserDto> userDto = userService.findByEmail(userInformation.get("email"));
 
         String accessToken = userDto.map(dto -> jwtUtil.encode(dto.getId())).orElse(null);
 
-        return new LoginResultDto(kakaoAccessToken, accessToken);
+        return new LoginResultDto(kakaoAccessToken.get("accessToken"), accessToken);
     }
 
     @PostMapping("session")
