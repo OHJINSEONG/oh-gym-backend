@@ -45,12 +45,10 @@ public class SetService {
         return set.toDto();
     }
 
-    @Cacheable("sets")
     public List<SetResultDto> list(Long exerciseId) {
         return setRepository.findAllByExerciseId(exerciseId).stream().map(Set::toDto).toList();
     }
 
-    @Cacheable("set-patch")
     public List<SetResultDto> patch(Long exerciseId, List<SetDto> setDtos) {
         List<Set> sets = setRepository.findAllByExerciseId(exerciseId);
         for (Set set : sets) {
@@ -90,7 +88,6 @@ public class SetService {
         }
     }
 
-    @Cacheable("set-complete")
     public SetResultDto complete(Long setId) {
         Set set = setRepository.getReferenceById(setId);
         set.complete();

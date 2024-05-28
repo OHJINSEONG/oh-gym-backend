@@ -10,14 +10,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.HashMap;
 
 @Transactional
 @Service
 public class KakaoService {
-    public String getAccessToken(String code) {
-        String accessToken = "";
+    public HashMap<String, String> getAccessToken(String code) {
+        HashMap<String, String> tokenInfo = new HashMap<>();
 
         String reqURL = "https://kauth.kakao.com/oauth/token";
 
@@ -32,13 +34,20 @@ public class KakaoService {
             StringBuilder sb = new StringBuilder();
             sb.append("grant_type=authorization_code");
             sb.append("&client_id=f99c39ffcdf63597195c1d3678b78fde");
-            sb.append("&redirect_uri=https://ooh-gym.fly.dev/auth/kakao/callback");
+
+            String redirectUri = "http://localhost:8080/auth/kakao/callback";
+
+            if (System.getenv("ENVIRONMENT") != null && System.getenv("ENVIRONMENT").equals("PRODUCTION")) {
+                redirectUri = "https://ooh-gym.fly.dev/auth/kakao/callback";
+            }
+
+            sb.append("&redirect_uri=" + redirectUri);
             sb.append("&code=" + code);
             bw.write(sb.toString());
             bw.flush();
 
             int responseCode = conn.getResponseCode();
-            System.out.println(""+responseCode);
+            System.out.println("" + responseCode);
             System.out.println("responseCode : " + responseCode);
 
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -52,7 +61,17 @@ public class KakaoService {
 
             JsonElement element = JsonParser.parseString(result);
 
-            accessToken = element.getAsJsonObject().get("access_token").getAsString();
+            String accessToken = element.getAsJsonObject().get("access_token").getAsString();
+            String refreshToken = element.getAsJsonObject().get("refresh_token").getAsString();
+            long expiresIn = element.getAsJsonObject().get("expires_in").getAsLong();
+
+            tokenInfo.put("accessToken", accessToken);
+            tokenInfo.put("refreshToken", refreshToken);
+            tokenInfo.put("expiresIn", String.valueOf(expiresIn));
+
+            System.out.println("Access Token: " + tokenInfo.get("accessToken"));
+            System.out.println("Refresh Token: " + refreshToken);
+            System.out.println("Expires In: " + expiresIn);
 
             System.out.println("accessToken : " + accessToken);
 
@@ -62,7 +81,7 @@ public class KakaoService {
             e.printStackTrace();
         }
 
-        return accessToken;
+        return tokenInfo;
     }
 
     public HashMap<String, String> getUser(String kakaoAccessToken) {
@@ -99,7 +118,7 @@ public class KakaoService {
 
             System.out.println(email);
 
-            if(email == null){
+            if (email == null) {
                 throw new InValidEmail();
             }
 
@@ -115,35 +134,62 @@ public class KakaoService {
         return userInformation;
     }
 
-    public HashMap<String, String> logout(String kakaoAccessToken) {
+    public void logout(String kakaoAccessToken) throws IOException {
         HashMap<String, String> userInformation = new HashMap<>();
-        String reqURL = "https://kapi.kakao.com/v1/user/unlink";
+        String reqURL = "https://kapi.kakao.com/v1/user/logout";
+
+        HttpURLConnection connection = null;
+        BufferedReader reader = null;
+
         try {
+            // URL 설정
             URL url = new URL(reqURL);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            connection = (HttpURLConnection) url.openConnection();
 
-            conn.setRequestMethod("POST");
+            // HTTP 메서드 설정
+            connection.setRequestMethod("POST");
 
-            conn.setRequestProperty("Authorization", "Bearer " + kakaoAccessToken);
+            // 요청 헤더 설정
+            connection.setRequestProperty("Authorization", "Bearer " + kakaoAccessToken);
 
-            int responseCode = conn.getResponseCode();
-            System.out.println("responseCode : " + responseCode);
+            // 응답 코드 확인
+            int responseCode = connection.getResponseCode();
+            System.out.println("Response Code: " + responseCode);
 
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            // 응답 코드에 따른 처리
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // 응답 데이터 읽기
+                reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String line;
+                StringBuilder response = new StringBuilder();
 
-            String line = "";
-            String result = "";
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
 
-            while ((line = br.readLine()) != null) {
-                result += line;
+                System.out.println("Response Body: " + response.toString());
+            } else {
+                // 에러 응답 읽기
+                reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+                String line;
+                StringBuilder errorResponse = new StringBuilder();
+
+                while ((line = reader.readLine()) != null) {
+                    errorResponse.append(line);
+                }
+
+                System.err.println("Error Response Body: " + errorResponse.toString());
+                throw new IOException("Failed to logout. Response Code: " + responseCode);
             }
-            System.out.println("response body : " + result);
-
-            JsonElement element = JsonParser.parseString(result);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
+        } finally {
+            if (reader != null) {
+                reader.close();
+            }
+            if (connection != null) {
+                connection.disconnect();
+            }
         }
-
-        return userInformation;
     }
 }

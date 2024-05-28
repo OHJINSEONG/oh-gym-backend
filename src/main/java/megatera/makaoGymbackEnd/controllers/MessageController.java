@@ -4,6 +4,8 @@ import megatera.makaoGymbackEnd.dtos.*;
 import megatera.makaoGymbackEnd.services.ChatMessageService;
 import megatera.makaoGymbackEnd.services.ChattingRoomService;
 import megatera.makaoGymbackEnd.utils.JwtUtil;
+import org.springframework.cloud.aws.messaging.listener.SqsMessageDeletionPolicy;
+import org.springframework.cloud.aws.messaging.listener.annotation.SqsListener;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;

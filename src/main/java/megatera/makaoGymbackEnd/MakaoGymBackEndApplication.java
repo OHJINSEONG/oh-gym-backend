@@ -1,18 +1,29 @@
 package megatera.makaoGymbackEnd;
 
+import com.amazonaws.services.sqs.AmazonSQSAsync;
 import megatera.makaoGymbackEnd.interceptors.AuthenticationInterceptor;
 import megatera.makaoGymbackEnd.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cloud.aws.messaging.core.QueueMessagingTemplate;
+import org.springframework.cloud.aws.messaging.listener.SqsMessageDeletionPolicy;
+import org.springframework.cloud.aws.messaging.listener.annotation.SqsListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@SpringBootApplication
+@SpringBootApplication(
+        exclude = {
+                org.springframework.cloud.aws.autoconfigure.context.ContextInstanceDataAutoConfiguration.class,
+                org.springframework.cloud.aws.autoconfigure.context.ContextStackAutoConfiguration.class,
+                org.springframework.cloud.aws.autoconfigure.context.ContextRegionProviderAutoConfiguration.class
+        }
+)
 @EnableCaching
 public class MakaoGymBackEndApplication {
     @Value("${jwt.secret}")
@@ -52,6 +63,14 @@ public class MakaoGymBackEndApplication {
     public JwtUtil jwtUtil() {
         return new JwtUtil(jwtSecret);
     }
-}
 
-//를 사용하여 모든 유알엘에 CORS를 적용하지만 명시적으로 도 적어줄수있다.
+    @Bean
+    public ApplicationRunner applicationRunner(
+            AmazonSQSAsync amazonSQSAsync,
+            @Value("${cloud.aws.sqs.queue-name}") String queueName
+    ) {
+        return args -> {
+            QueueMessagingTemplate queueMessagingTemplate = new QueueMessagingTemplate(amazonSQSAsync);
+        };
+    }
+}
