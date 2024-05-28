@@ -22,14 +22,14 @@ class UserServiceTest {
     private KakaoService kakaoService;
     private ProductService productService;
     private OrderService orderService;
-    private PtTicketService ptTicketService;
-
+    private GoogleService googleService;
 
     @BeforeEach
     void setup() {
         userRepository = mock(UserRepository.class);
         kakaoService = mock(KakaoService.class);
-        userService = new UserService(userRepository, kakaoService, productService, orderService, ptTicketService);
+        googleService = mock(GoogleService.class);
+        userService = new UserService(userRepository, kakaoService, productService, orderService, googleService);
     }
 
     @Test
@@ -80,7 +80,7 @@ class UserServiceTest {
                 userInformation
         );
 
-        UserDto userDto = userService.create("kakaoAccessToken");
+        UserDto userDto = userService.kakaoUserRegister("kakaoAccessToken");
 
         assertThat(userDto.getUserName()).isEqualTo("오진성");
     }

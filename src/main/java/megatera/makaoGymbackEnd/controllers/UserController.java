@@ -1,5 +1,6 @@
 package megatera.makaoGymbackEnd.controllers;
 
+import megatera.makaoGymbackEnd.dtos.GoogleAccessTokenDto;
 import megatera.makaoGymbackEnd.dtos.KakaoAccessTokenDto;
 import megatera.makaoGymbackEnd.dtos.UserDto;
 import megatera.makaoGymbackEnd.services.NotificationService;
@@ -38,11 +39,24 @@ public class UserController {
         return jwtUtil.encode(userDto.getId());
     }
 
-    @PostMapping
-    public String register(
+    @PostMapping("kakao")
+    public String kakakoUserRegister(
             @RequestBody KakaoAccessTokenDto kakaoAccessTokenDto
     ) {
-        UserDto userDto = userService.create(kakaoAccessTokenDto.getKakaoAccessToken());
+        UserDto userDto = userService.kakaoUserRegister(kakaoAccessTokenDto.getKakaoAccessToken());
+
+        String context = userDto.getUserName() + "님 회원가입을 축하드립니다!";
+
+        notificationService.sendNotification(userDto.getId(), context, "SignUp");
+
+        return jwtUtil.encode(userDto.getId());
+    }
+
+    @PostMapping("google")
+    public String googleUserRegister(
+            @RequestBody GoogleAccessTokenDto googleAccessTokenDto
+    ) {
+        UserDto userDto = userService.googleUserRegister(googleAccessTokenDto.getGoogleAccessToken());
 
         String context = userDto.getUserName() + "님 회원가입을 축하드립니다!";
 

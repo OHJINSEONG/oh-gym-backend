@@ -1,16 +1,16 @@
 package megatera.makaoGymbackEnd.dtos;
 
 public class LoginResultDto {
-    private String kakaoAccessToken;
+    private String oauthAccessToken;
     private String accessToken;
 
-    public LoginResultDto(String kakaoAccessToken, String accessToken) {
-        this.kakaoAccessToken = kakaoAccessToken;
+    public LoginResultDto(String oauthAccessToken, String accessToken) {
+        this.oauthAccessToken = oauthAccessToken;
         this.accessToken = accessToken;
     }
 
-    public String getKakaoAccessToken() {
-        return kakaoAccessToken;
+    public String getOauthAccessToken() {
+        return oauthAccessToken;
     }
 
     public String getAccessToken() {

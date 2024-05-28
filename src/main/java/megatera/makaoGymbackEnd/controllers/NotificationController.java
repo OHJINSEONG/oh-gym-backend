@@ -3,6 +3,7 @@ package megatera.makaoGymbackEnd.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import megatera.makaoGymbackEnd.dtos.NotificationDto;
 import megatera.makaoGymbackEnd.services.NotificationService;
+
 import megatera.makaoGymbackEnd.services.SseEmitterService;
 import org.springframework.cloud.aws.messaging.listener.SqsMessageDeletionPolicy;
 import org.springframework.cloud.aws.messaging.listener.annotation.SqsListener;
@@ -62,7 +63,7 @@ public class NotificationController {
         try {
             NotificationDto notification = mapper.readValue(message, NotificationDto.class);
             System.out.println("Content: " + notification.getContent());
-            sseEmitterService.send(notification.getUserId(), notification.getContent(), notification.getType());
+            sseEmitterService.send(notification);
         } catch (Exception e) {
             e.printStackTrace();
         }
