@@ -41,11 +41,23 @@ public class KakaoSessionController {
         return new LoginResultDto(kakaoAccessToken.get("accessToken"), accessToken);
     }
 
-    @PostMapping("session")
+    @PostMapping("session/logout")
     public void logout(
             @RequestBody KakaoAccessTokenDto kakaoAccessTokenDto
     ) {
-        kakaoService.logout(kakaoAccessTokenDto.getKakaoAccessToken());
+        System.out.println(kakaoAccessTokenDto.getKakaoAccessToken());
+
+        try {
+            String kakaoAccessToken = kakaoAccessTokenDto.getKakaoAccessToken();
+            if (kakaoAccessToken == null || kakaoAccessToken.isEmpty()) {
+                throw new IllegalArgumentException("Invalid Kakao access token");
+            }
+
+            kakaoService.logout(kakaoAccessToken);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to logout from Kakao", e);
+        }
     }
 
     @ExceptionHandler(InValidEmail.class)

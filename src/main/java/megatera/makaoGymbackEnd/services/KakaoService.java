@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.HashMap;
 
@@ -34,6 +36,7 @@ public class KakaoService {
             sb.append("&client_id=f99c39ffcdf63597195c1d3678b78fde");
 
             String redirectUri = "http://localhost:8080/auth/kakao/callback";
+
             if (System.getenv("ENVIRONMENT") != null && System.getenv("ENVIRONMENT").equals("PRODUCTION")) {
                 redirectUri = "https://ooh-gym.fly.dev/auth/kakao/callback";
             }
@@ -131,35 +134,62 @@ public class KakaoService {
         return userInformation;
     }
 
-    public HashMap<String, String> logout(String kakaoAccessToken) {
+    public void logout(String kakaoAccessToken) throws IOException {
         HashMap<String, String> userInformation = new HashMap<>();
-        String reqURL = "https://kapi.kakao.com/v1/user/unlink";
+        String reqURL = "https://kapi.kakao.com/v1/user/logout";
+
+        HttpURLConnection connection = null;
+        BufferedReader reader = null;
+
         try {
+            // URL 설정
             URL url = new URL(reqURL);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            connection = (HttpURLConnection) url.openConnection();
 
-            conn.setRequestMethod("POST");
+            // HTTP 메서드 설정
+            connection.setRequestMethod("POST");
 
-            conn.setRequestProperty("Authorization", "Bearer " + kakaoAccessToken);
+            // 요청 헤더 설정
+            connection.setRequestProperty("Authorization", "Bearer " + kakaoAccessToken);
 
-            int responseCode = conn.getResponseCode();
-            System.out.println("responseCode : " + responseCode);
+            // 응답 코드 확인
+            int responseCode = connection.getResponseCode();
+            System.out.println("Response Code: " + responseCode);
 
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            // 응답 코드에 따른 처리
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // 응답 데이터 읽기
+                reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String line;
+                StringBuilder response = new StringBuilder();
 
-            String line = "";
-            String result = "";
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
 
-            while ((line = br.readLine()) != null) {
-                result += line;
+                System.out.println("Response Body: " + response.toString());
+            } else {
+                // 에러 응답 읽기
+                reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+                String line;
+                StringBuilder errorResponse = new StringBuilder();
+
+                while ((line = reader.readLine()) != null) {
+                    errorResponse.append(line);
+                }
+
+                System.err.println("Error Response Body: " + errorResponse.toString());
+                throw new IOException("Failed to logout. Response Code: " + responseCode);
             }
-            System.out.println("response body : " + result);
-
-            JsonElement element = JsonParser.parseString(result);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
+        } finally {
+            if (reader != null) {
+                reader.close();
+            }
+            if (connection != null) {
+                connection.disconnect();
+            }
         }
-
-        return userInformation;
     }
 }
